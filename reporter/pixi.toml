@@ -1,0 +1,24 @@
+[project]
+name = "borgdash-reporter"
+version = "0.1.0"
+description = "Borg backup report generation"
+authors = ["Vivien Chene <viv@vivc.org>"]
+channels = ["conda-forge"]
+platforms = ["osx-arm64", 'linux-64']
+
+[tasks]
+build = { cmd = "pip install -e .", cwd = "./" }
+withenv = "export BORGDASH_CONFIG=../etc/config.dev.yaml && borgdash-reporter"
+withconfig = { cmd = ["borgdash-reporter", "../etc/config.dev.yaml"] }
+set = "export VAR=hello && echo $VAR"
+
+mypy = { cmd = ["mypy", "src"], cwd = "./" }
+test = { cmd = ["pytest", "test"], cwd = "./" }
+release = { depends-on = ["mypy", "test"] }
+
+[dependencies]
+python = ">=3.13.2,<3.14"
+pip = ">=25.0.1,<26"
+pyaml = ">=25.1.0,<26"
+mypy = ">=1.15.0,<2"
+types-pyyaml = ">=6.0.12.20241230,<7"

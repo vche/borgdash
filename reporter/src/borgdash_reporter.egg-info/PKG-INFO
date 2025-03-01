@@ -1,0 +1,10 @@
+Metadata-Version: 2.2
+Name: borgdash-reporter
+Version: 1.0.1
+Summary: Borg backup report generation
+Author-email: Vivien Chene <viv@vivc.org>
+Keywords: python,tool,borg
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: pyaml

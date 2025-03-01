@@ -1,0 +1,32 @@
+reporter: # builtin web server configuration
+  report_path: "/tmp/bordash.json"
+  borg_path: "/opt/homebrew/bin/borg"
+
+  # Base directory for relative paths specified in repos config's 'log_path'
+  logs_basedir: "/Volumes/dwarfstorage/Backup/logs"
+  # repos_basedir: "/Volumes/dwarfstorage/Backup"
+  repos_basedir: "ssh://viv@192.168.0.198/home/viv/dwarfdisk/Backup"
+
+  # Enable alarming on discord channel for failed backups
+  discord:
+    webhook: "1420474818:https://discord.com/api/webhooks/1127505560233333090/dGZjhM32M4Vd-Iy1B9H"
+    webhook_user: "Borg backup monitor"
+    message: "**{} Backups failed**:\n\n{}"
+    message_device: "- {}: Failed with status {} on {} at {}\n"
+
+repos:
+  # Repo  name
+  "dwarfserver":
+    # Repo absolute path
+    "repo_path":
+      "dwarfserver"
+      # Repo logs absolute path, or relative to the main log_dir
+    "log_path": "dwarfserver"
+
+    # Repo password TODO: obfuscate/env var
+    "repo_pwd": "backup"
+
+    # Command/script to run to manually start a backup.
+    # If left empty or not specified, the backup won't be
+    # manually runnable. Not yet used can bd ssh xxx bin/borg_backup.sh
+    "script": "script"

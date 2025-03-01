@@ -1,0 +1,12 @@
+pyproject.toml
+src/borgdash_reporter/__init__.py
+src/borgdash_reporter/cli.py
+src/borgdash_reporter/config.py
+src/borgdash_reporter/exceptions.py
+src/borgdash_reporter/version.py
+src/borgdash_reporter.egg-info/PKG-INFO
+src/borgdash_reporter.egg-info/SOURCES.txt
+src/borgdash_reporter.egg-info/dependency_links.txt
+src/borgdash_reporter.egg-info/entry_points.txt
+src/borgdash_reporter.egg-info/requires.txt
+src/borgdash_reporter.egg-info/top_level.txt

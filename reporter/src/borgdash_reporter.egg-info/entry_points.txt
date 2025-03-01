@@ -1,0 +1,2 @@
+[console_scripts]
+borgdash-reporter = borgdash_reporter.cli:main
