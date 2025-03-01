@@ -3,7 +3,7 @@ import logging
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, Optional, Tuple
+from typing import Any, Dict, Iterator, List, Optional, Self, Tuple
 from .config import Config
 from .exceptions import RepoError
 from .borg import BorgClient
@@ -22,14 +22,14 @@ class BorgLog():
   MAX_LINES_SCAN = 100
 
   def __init__(self, filepath: Path):
-    self._filepath = filepath
+    self.filepath = filepath
     self.status, self.date_time, self.archive_name = self._parse_log()
 
   def __str__(self) -> str:
-    return f"{self._filepath.name}[{self.date_time}={self.status}][{self.archive_name}]"
+    return f"{self.filepath.name}[{self.date_time}={self.status}][{self.archive_name}]"
 
   def _parse_log(self) -> Tuple[str, Optional[datetime], Optional[str]]:
-    with open(self._filepath, 'r') as f:
+    with open(self.filepath, 'r') as f:
       return self._status_from_last_lines(f)
 
   def _status_from_last_lines(self, f) -> Tuple[str, Optional[datetime], Optional[str]]:
@@ -71,75 +71,142 @@ class BorgLog():
     return status, date_time, archive_name
 
   def lines(self) -> List[str]:
-    with open(self._filepath, 'r') as f:
+    with open(self.filepath, 'r') as f:
       return f.readlines()
+
+  def to_dict(self) -> Dict[str, Any]:
+      return {
+        "name": self.filepath.name,
+        "fullpath": str(self.filepath.absolute()),
+        "datetime": self.date_time.isoformat() if self.date_time else None,
+        "status": self.status,
+        "archive": self.archive_name,
+      }
+
+
+class BorgSize:
+  def __init__(self, osize: int = 0, csize: int = 0, dsize:int = 0):
+    self.set_sizes(osize, csize, dsize)
+
+  def set_sizes(self, osize: int = 0, csize: int = 0, dsize:int = 0):
+    self.original_size = osize
+    self.compressed_size = csize
+    self.deduplicated_size = dsize
+
+  @classmethod
+  def from_dict(cls, sizes: Dict[str, Any]) -> Self:
+    return cls(sizes.get("size", 0), sizes.get("csize", 0), sizes.get("dsize", 0))
+
+  def to_dict(self) -> Dict[str, Any]:
+    return {
+      "osize": self.original_size,
+      "csize": self.compressed_size,
+      "dsize": self.deduplicated_size,
+    }
+
+
+class BorgArchive:
+  def __init__(
+    self, name: str,
+    datetime: Optional[datetime] = None,
+    sizes: Optional[BorgSize] = None,
+    log: Optional[BorgLog] = None,
+  ) -> None:
+    self.name = name
+    self.datetime = datetime
+    self.sizes = sizes
+    self.log = log
+
+  def to_dict(self) -> Dict[str, Any]:
+    return {
+      "name": self.name,
+      "datetime": self.datetime.isoformat() if self.datetime else None,
+      "sizes": self.sizes.to_dict() if self.sizes else None,
+      "log": self.log.to_dict() if self.log else None,
+    }
 
 
 class BorgRepo:
   def __init__(self, name: str, borg_path: str, path: str, logs: str, pwd: str, cmd: str):
     # repo config
     self.name = name
-    self.path = path
-    self.logs = Path(logs)
+    self.repopath = path
+    self.logspath = Path(logs)
     self.pwd = pwd
     self.cmd = cmd
-    self.borg = BorgClient(borg_path, self.path, self.pwd)
+    self.borg = BorgClient(borg_path, self.repopath, self.pwd)
 
     # repo data
-    self._props = {}
+    self.sizes = BorgSize()
+    self.logs = {}
+    self.archives = {}
+    self.last_run = None
 
-  def scan(self):
-    log.info(f"Scanning repo {self.name}, path: {self.path} logs: {self.logs}")
-
-    # # Get repo info from borg
-    info = self.borg.info()
-    self._props.update(info)
-
-    # # Get backup list
-    borg_list = self.borg.list()
-    self._props["achives"] = borg_list
-
+  def _scan_logs(self):
+    log.info(f"Scanning logs: {self.logspath}")
+    self.logs = {}
+    last_log = None
     for logfile in self.get_logs_list():
       borglog = BorgLog(logfile)
-      # print(f"pipo log {borglog}")
-      # get archive_name
-      #   if none: keep
-      #   if found add to entry in archive dict
-      #   if not in archives, delete
-      # append to log dict {filename: BorgLog}
-      # keep track of latest add it to stats
+      if borglog.archive_name:
+        archive = self.archives.get(borglog.archive_name)
+        if archive:
+          # Found the matching archive, link it to the log file
+          archive.log = borglog
+          self.logs[borglog.filepath.name] = borglog
+        else:
+          # Log file has an archive that is not saved, remove it
+          borglog.filepath.unlink(missing_ok=True)
+      else:
+        # No archive name in the log file, most probably a failed backup, keep it for manual cleaning
+        self.logs[borglog.filepath.name] = borglog
 
-    # # Get last run info for this repo
+      # If we have a date time, save the most recent run
+      if borglog.date_time and (not last_log or borglog.date_time > last_log.date_time):  # type: ignore
+        last_log = borglog
+    self.last_run = last_log
 
-    # # Get details on each backup, borg info on each
-    # self._props["date"] = datetime.fromisoformat(self._props["date"]))
+  def scan(self):
+    log.info(f"Scanning repo {self.name}, path: {self.repopath}")
 
-    # in logs: cleanup logs with no matching backup
+    # Get repo info from borg
+    info = self.borg.info()
+    self.sizes = BorgSize.from_dict(info)
+
+    # Get backup list
+    borg_list = self.borg.list()
+    self.archives = {archive: BorgArchive(archive) for archive in borg_list}
+
+    # Get and scan logs
+    self._scan_logs()
+
+    # Get details on each backup
+    for backup in self.archives.values():
+      log.info(f"Scanning archive: {backup.name}")
+      archinfo = self.borg.info(archive=backup.name)
+      if archinfo:
+          backup.datetime = datetime.fromisoformat(archinfo["date"])
+          backup.sizes = BorgSize.from_dict(archinfo)
 
   def get_logs_list(self) -> Iterator[Path]:
     try:
-      return self.logs.iterdir()
+      return self.logspath.iterdir()
     except OSError as e:
       log.error(f"Unable to read logs: {e}")
       return iter([])
 
 
   def to_dict(self) -> Dict[str, Any]:
-    # repo_data = {
-    #     "backups": [
-    #       name:{
-    #         ...
-    #         logfile: filepath
-    #       }
-    #     ],
-    #     "script": repo_config.get("script", ""),
-    #     "last_result": "warning",
-    #     "last_date": "",
-    #     "last_time": "",
-    #     "last_log": "filepath",
-    #     "ctime": time.ctime(),
-    # }
-    return {}
+    return {
+        "name": self.name,
+        "repopath": self.repopath,
+        "logspath": str(self.logspath),
+        "sizes": self.sizes.to_dict(),
+        "archives": { arch.name: arch.to_dict() for arch in self.archives.values() },
+        "logfiles": { log.filepath.name: log.to_dict() for log in self.logs.values() },
+        "script": self.cmd,
+        "last_run": self.last_run.to_dict() if self.last_run else None,
+    }
 
 
 class BorgReporter:
@@ -158,8 +225,11 @@ class BorgReporter:
 
   def export(self, export_file: Optional[str] = None):
     """Writes the repo report to a json file"""
-    with open(export_file or self._cfg.report_path, "w") as f:
+    filename = export_file or self._cfg.report_path
+    with open(filename, "w") as f:
       json.dump(self._repos, f)
+    log.info(f"Borg backup report exported to {filename}")
+
 
   def repo_config_dict(self, repo_config: Dict[str, Any]) -> Dict[str, Any]:
     if repo_config:

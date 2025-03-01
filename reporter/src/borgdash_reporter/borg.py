@@ -7,7 +7,7 @@ import os
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 log = logging.getLogger(__name__)
 
@@ -36,7 +36,7 @@ class BorgClient:
     if pwd:
       env_list = self._set_pwd(env_list, pwd)
     try:
-      log.info(f"Executing borg client: {arg_list}")
+      log.debug(f"Executing borg client: {arg_list}")
       res = subprocess.run(arg_list, stdout=subprocess.PIPE, check=True, env=env_list)
     except subprocess.CalledProcessError as e:
       log.exception("Failed to execute borg client: %s", e)
@@ -76,17 +76,15 @@ class BorgClient:
       log.error("Invalid borg info output: %s", e)
     return info
 
-  def _parse_list_result(self, json_output: Optional[bytes]) -> List[str]:
+  def _parse_list_result(self, json_output: Optional[bytes]) -> Dict[str, Dict[str,Any]]:
     """Extract a subset of data from the list output to use in borgweb."""
-    info  = []
-    if not json_output:
-      return []
-
-    try:
-      parsed = json.loads(json_output)
-      info = [arch["archive"] for arch in parsed["archives"]]
-    except (json.JSONDecodeError, KeyError) as e:
-      log.error("Invalid borg list output: %s", e)
+    info  = {}
+    if json_output:
+      try:
+        parsed = json.loads(json_output)
+        info = {arch["archive"]: {"name": arch["archive"]} for arch in parsed["archives"]}
+      except (json.JSONDecodeError, KeyError) as e:
+        log.error("Invalid borg list output: %s", e)
     return info
 
   def set_repo(self, repo, pwd=None):
@@ -100,13 +98,13 @@ class BorgClient:
     infopath = f"{repo}::{archive}" if archive else repo
 
     # Run borg client
-    log.info(f"Fetching info on {infopath}")
+    log.debug(f"Fetching info on {infopath}")
     res = self._run_sync(["info", "--json", infopath], pwd)
     return self._parse_info_result(res)
 
   def list(self, repo=None, archive=None, pwd=None):
     repo = repo or self._current_repo
     # Run borg client
-    log.info(f"Fetching list on {repo}")
+    log.debug(f"Fetching list on {repo}")
     res = self._run_sync(["list", "--json", repo], pwd)
     return self._parse_list_result(res)

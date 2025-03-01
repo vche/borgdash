@@ -51,6 +51,6 @@ def main() -> None:
       sys.exit(1)
   except Exception as e:
     print(f"Unexpected error: {e}")
-    if args.debug:
-      traceback.print_exc()
+    # if args.debug:
+    traceback.print_exc()
     sys.exit(2)

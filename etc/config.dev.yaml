@@ -18,15 +18,10 @@ repos:
   # Repo  name
   "dwarfserver":
     # Repo absolute path
-    "repo_path":
-      "dwarfserver"
-      # Repo logs absolute path, or relative to the main log_dir
+    "repo_path": "dwarfserver"
+    # Repo logs absolute path, or relative to the main log_dir
     "log_path": "dwarfserver"
-
     # Repo password TODO: obfuscate/env var
     "repo_pwd": "backup"
-
     # Command/script to run to manually start a backup.
-    # If left empty or not specified, the backup won't be
-    # manually runnable. Not yet used can bd ssh xxx bin/borg_backup.sh
     "script": "script"
