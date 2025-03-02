@@ -20,10 +20,12 @@ can run backup: api/run/target
 
 
 ## TODO
-- create yaml config
-- python utility basic with setup
-- basic modules to read config and reuse existing from borgweb
-- finish bin
+- [x] create yaml config
+- [x] python utility basic with setup
+- [x] basic modules to read config and reuse existing from borgweb
+- [x] finish bin
 - create cron or other configurable system
+- readme update
 
-- react app
+- [x] react app bootstrap
+- index layout

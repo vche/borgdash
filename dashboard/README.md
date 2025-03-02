@@ -1,3 +1,11 @@
+have a lib to load the repo list at startup
+server components for the differnt pages to get partial data required for pages
+server component to button to rescan, calling the lib, and called from rescan button
+  -> must be loading until finished
+
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
