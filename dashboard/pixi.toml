@@ -1,0 +1,15 @@
+[project]
+name = "borgdash-reporter"
+version = "0.1.0"
+description = "Borg backup dashboard"
+authors = ["Vivien Chene <viv@vivc.org>"]
+channels = ["conda-forge"]
+platforms = ["osx-arm64", 'linux-64']
+
+[tasks]
+dev = { cmd = "npm run dev", depends-on = ["install"], cwd = "./" }
+install = { cmd = "npm install", cwd = "./" }
+build = { cmd = "npm run build", depends-on = ["install"], cwd = "./" }
+
+[dependencies]
+nodejs = ">=22.12.0,<22.14"
