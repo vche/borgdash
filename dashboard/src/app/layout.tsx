@@ -1,3 +1,5 @@
+import * as React from "react";
+import LinearProgress from "@mui/material/LinearProgress";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import type { Metadata, Viewport } from "next";
 import { geistSans, geistMono, roboto } from "@/lib/font";
@@ -34,19 +36,21 @@ export default function RootLayout({
       >
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
           <CssBaseline />
-          <NextAppProvider
-            navigation={BORGDASH_NAVIGATION}
-            theme={borgdash_theme}
-            branding={BORGDASH_BRANDING}
-          >
-            <DashboardLayout
-              slots={{
-                toolbarActions: ModeSwitcher,
-              }}
+          <React.Suspense fallback={<LinearProgress />}>
+            <NextAppProvider
+              navigation={BORGDASH_NAVIGATION}
+              theme={borgdash_theme}
+              branding={BORGDASH_BRANDING}
             >
-              <PageContainer>{children}</PageContainer>
-            </DashboardLayout>
-          </NextAppProvider>
+              <DashboardLayout
+                slots={{
+                  toolbarActions: ModeSwitcher,
+                }}
+              >
+                <PageContainer>{children}</PageContainer>
+              </DashboardLayout>
+            </NextAppProvider>
+          </React.Suspense>
           );
         </AppRouterCacheProvider>
       </body>

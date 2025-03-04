@@ -108,19 +108,19 @@ class BorgSize:
 class BorgArchive:
   def __init__(
     self, name: str,
-    datetime: Optional[datetime] = None,
+    date_time: Optional[datetime] = None,
     sizes: Optional[BorgSize] = None,
     log: Optional[BorgLog] = None,
   ) -> None:
     self.name = name
-    self.datetime = datetime
+    self.date_time = date_time
     self.sizes = sizes
     self.log = log
 
   def to_dict(self) -> Dict[str, Any]:
     return {
       "name": self.name,
-      "datetime": self.datetime.isoformat() if self.datetime else None,
+      "datetime": self.date_time.isoformat() if self.date_time else None,
       "sizes": self.sizes.to_dict() if self.sizes else None,
       "log": self.log.to_dict() if self.log else None,
     }
@@ -141,6 +141,7 @@ class BorgRepo:
     self.logs = {}
     self.archives = {}
     self.last_run = None
+    self.last_backup = None
 
   def _scan_logs(self):
     log.info(f"Scanning logs: {self.logspath}")
@@ -181,12 +182,16 @@ class BorgRepo:
     self._scan_logs()
 
     # Get details on each backup
+    last_backup = None
     for backup in self.archives.values():
       log.info(f"Scanning archive: {backup.name}")
       archinfo = self.borg.info(archive=backup.name)
       if archinfo:
-          backup.datetime = datetime.fromisoformat(archinfo["date"])
+          backup.date_time = datetime.fromisoformat(archinfo["date"])
           backup.sizes = BorgSize.from_dict(archinfo)
+          if backup.date_time and (not last_backup or backup.date_time > last_backup.date_time):  # type: ignore
+            last_backup = backup
+      self.last_backup = last_backup
 
   def get_logs_list(self) -> Iterator[Path]:
     try:
@@ -206,6 +211,7 @@ class BorgRepo:
         "logfiles": { log.filepath.name: log.to_dict() for log in self.logs.values() },
         "script": self.cmd,
         "last_run": self.last_run.to_dict() if self.last_run else None,
+        "last_backup": self.last_backup.to_dict() if self.last_backup else None,
     }
 
 
