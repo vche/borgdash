@@ -1,5 +1,11 @@
 import { promises as fs } from "fs";
 
+export type tBorgSize = {
+  osize: number;
+  csize: number;
+  dsize: number;
+};
+
 type tBorgLog = {
   archive: string | null;
   datetime: string | null;
@@ -7,11 +13,11 @@ type tBorgLog = {
   name: string;
   status: string | null;
 };
-type tBorgArchive = {
+export type tBorgArchive = {
   datetime: string | null;
   log: tBorgLog;
   name: string;
-  sizes: number[];
+  sizes: tBorgSize;
 };
 export type tBorgRepo = {
   archives: { [k: string]: tBorgArchive };
@@ -22,13 +28,13 @@ export type tBorgRepo = {
   name: string;
   repopath: string;
   script: string;
-  sizes: number[];
+  sizes: tBorgSize;
   status: boolean | null;
 };
 export type tBorgReport = {
   timestamp: string;
-  repos: tBorgRepo[] | null | undefined
-} | null | undefined
+  repos: { [k: string]: tBorgRepo } | null | undefined;
+} | null | undefined;
 
 // Report caching to avoid reloading
 let report_cache: tBorgReport = undefined;
@@ -46,8 +52,8 @@ export async function load_report_data(force: boolean = false) {
 export function get_repos_statuses(report: tBorgReport) {
   // Return status count of each report: [successes, errors, unkown]
   const statuses = [0, 0, 0];
-  if (report) {
-    report.repos?.map((repo) => {
+  if (report && report.repos) {
+    Object.values(report.repos).map((repo) => {
       if (repo.status == null) statuses[2]++;
       else if (repo.status) statuses[0]++;
       else statuses[1]++;

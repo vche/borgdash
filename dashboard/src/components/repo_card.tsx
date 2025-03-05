@@ -1,4 +1,5 @@
 "use client"
+import * as React from 'react';
 import Button from '@mui/material/Button';
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -35,7 +36,6 @@ export default function RepoCard({ repo }: { repo: tBorgRepo }) {
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   onClick={() => { router.push(`/logs/${repo.name}/${repo.last_run?.name}`); }}
                 >
-                  {/* .MuiTableRow-hover */}
                   <TableCell component="th" scope="row"> Last run</TableCell>
                   <TableCell align="right" sx={{ color: get_status_color(repo.last_run?.status) }} >
                     {repo.last_run ? `${datetime_iso_to_short(repo.last_run.datetime)}` : "-"}

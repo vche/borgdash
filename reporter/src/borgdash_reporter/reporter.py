@@ -237,7 +237,7 @@ class BorgReporter:
   def to_dict(self) -> Dict[str, Any]:
     return {
       "timestamp": datetime.now().isoformat(),
-      "repos": self._repos,
+      "repos": {repo.name: repo.to_dict() for repo in self._repos},
     }
 
   def export(self, export_file: Optional[str] = None):
@@ -271,7 +271,7 @@ class BorgReporter:
       try:
         repo = BorgRepo(repo, **self.repo_config_dict(repo_config))
         repo.scan()
-        self._repos.append(repo.to_dict())
+        self._repos.append(repo)
       except RepoError as e:
         log.error(f"Unable to scan repo {repo}: {e}")
 

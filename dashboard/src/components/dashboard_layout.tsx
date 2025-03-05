@@ -56,7 +56,7 @@ export async function getNavigationConfig() {
     // Update backup header with refresh time
     const backup_header: NavigationSubheaderItem = {
       kind: "header",
-      title: `Backups (refreshed on ${datetime_iso_to_short(report_data.timestamp)})`,
+      title: `Backups (last refresh ${datetime_iso_to_short(report_data.timestamp)})`,
     }
     // Build the repo section and add item for each repo
     const repo_page_item: NavigationPageItem = {
@@ -73,7 +73,7 @@ export async function getNavigationConfig() {
       children: [],
     };
     const children: Navigation = []
-    report_data.repos?.map((repo) => {
+    Object.values(report_data.repos ?? {}).map((repo) => {
       children.push({
         segment: repo.name,
         title: repo.name,
