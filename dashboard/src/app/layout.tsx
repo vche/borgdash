@@ -10,8 +10,8 @@ import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { PageContainer } from "@toolpad/core/PageContainer";
 import borgdash_theme from "@/lib/theme";
 import {
-  BORGDASH_NAVIGATION,
   BORGDASH_BRANDING,
+  getNavigationConfig
 } from "@/components/dashboard_layout";
 
 export const metadata: Metadata = {
@@ -25,7 +25,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
@@ -38,7 +38,7 @@ export default function RootLayout({
           <CssBaseline />
           <React.Suspense fallback={<LinearProgress />}>
             <NextAppProvider
-              navigation={BORGDASH_NAVIGATION}
+              navigation={await getNavigationConfig()}
               theme={borgdash_theme}
               branding={BORGDASH_BRANDING}
             >

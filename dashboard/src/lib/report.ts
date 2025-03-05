@@ -23,11 +23,15 @@ export type tBorgRepo = {
   repopath: string;
   script: string;
   sizes: number[];
+  status: boolean | null;
 };
-type tBorgReport = tBorgRepo[] | null | undefined;
+export type tBorgReport = {
+  timestamp: string;
+  repos: tBorgRepo[] | null | undefined
+} | null | undefined
 
 // Report caching to avoid reloading
-let report_cache: tBorgReport = null;
+let report_cache: tBorgReport = undefined;
 
 export async function load_report_data(force: boolean = false) {
   // Reload if there's no cache or a force reload is required
@@ -37,4 +41,17 @@ export async function load_report_data(force: boolean = false) {
     console.log("File loaded yo");
   }
   return report_cache;
+}
+
+export function get_repos_statuses(report: tBorgReport) {
+  // Return status count of each report: [successes, errors, unkown]
+  const statuses = [0, 0, 0];
+  if (report) {
+    report.repos?.map((repo) => {
+      if (repo.status == null) statuses[2]++;
+      else if (repo.status) statuses[0]++;
+      else statuses[1]++;
+    });
+  }
+  return statuses;
 }

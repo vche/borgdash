@@ -7,7 +7,7 @@ export default async function Home() {
   return (
     <Grid container spacing={3}>
       {report_data
-        ? report_data.map((repo) => (<RepoCard repo={repo} key={`${repo.name}`} />))
+        ? report_data.repos?.map((repo) => (<RepoCard repo={repo} key={`${repo.name}`} />))
         : "No data, consider a manual refresh and/or check the reporter logs."}
     </Grid>
   );

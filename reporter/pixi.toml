@@ -10,7 +10,6 @@ platforms = ["osx-arm64", 'linux-64']
 build = { cmd = "pip install -e .", cwd = "./" }
 withenv = "export BORGDASH_CONFIG=../etc/config.dev.yaml && borgdash-reporter"
 withconfig = { cmd = ["borgdash-reporter", "../etc/config.dev.yaml"] }
-set = "export VAR=hello && echo $VAR"
 
 mypy = { cmd = ["mypy", "src"], cwd = "./" }
 test = { cmd = ["pytest", "test"], cwd = "./" }

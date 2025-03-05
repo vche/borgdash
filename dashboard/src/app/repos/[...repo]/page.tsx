@@ -10,7 +10,7 @@ export default async function Page({
   return (
     <Typography>
       Page for repo {repo[0]}
-      {repo.length > 1 && ` (Backup ${repo[1]})`}
+      {/* {repo.length > 1 && ` (Backup ${repo[1]})`} */}
     </Typography >
   );
 }

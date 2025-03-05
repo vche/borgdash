@@ -127,11 +127,11 @@ class BorgArchive:
 
 
 class BorgRepo:
-  def __init__(self, name: str, borg_path: str, path: str, logs: str, pwd: str, cmd: str):
+  def __init__(self, name: str, borg_path: str, path: str, logs: Optional[str], pwd: str, cmd: str):
     # repo config
     self.name = name
     self.repopath = path
-    self.logspath = Path(logs)
+    self.logspath = Path(logs) if logs else None
     self.pwd = pwd
     self.cmd = cmd
     self.borg = BorgClient(borg_path, self.repopath, self.pwd)
@@ -195,23 +195,28 @@ class BorgRepo:
 
   def get_logs_list(self) -> Iterator[Path]:
     try:
-      return self.logspath.iterdir()
+      return self.logspath.iterdir() if self.logspath else iter([])
     except OSError as e:
       log.error(f"Unable to read logs: {e}")
       return iter([])
 
 
+  def status(self) -> Optional[bool]:
+    if self.last_run:
+      return True if self.last_run.status and self.last_run.status in [BorgLog.SUCCESS, BorgLog.INFO] else False
+
   def to_dict(self) -> Dict[str, Any]:
     return {
-        "name": self.name,
-        "repopath": self.repopath,
-        "logspath": str(self.logspath),
-        "sizes": self.sizes.to_dict(),
-        "archives": { arch.name: arch.to_dict() for arch in self.archives.values() },
-        "logfiles": { log.filepath.name: log.to_dict() for log in self.logs.values() },
-        "script": self.cmd,
-        "last_run": self.last_run.to_dict() if self.last_run else None,
-        "last_backup": self.last_backup.to_dict() if self.last_backup else None,
+      "name": self.name,
+      "repopath": self.repopath,
+      "logspath": str(self.logspath) if self.logspath else None,
+      "sizes": self.sizes.to_dict(),
+      "archives": { arch.name: arch.to_dict() for arch in self.archives.values() },
+      "logfiles": { log.filepath.name: log.to_dict() for log in self.logs.values() },
+      "script": self.cmd,
+      "last_run": self.last_run.to_dict() if self.last_run else None,
+      "last_backup": self.last_backup.to_dict() if self.last_backup else None,
+      "status": self.status(),
     }
 
 
@@ -222,27 +227,33 @@ class BorgReporter:
 
   def resolve_path(self, base_path: str, partial_path: str) -> str:
     """Appends basepath unless partial path is absolute."""
-    if partial_path.startswith('/'):
+    if partial_path.startswith('/') or partial_path.startswith('ssh://'):
       return partial_path
     if base_path and not base_path.endswith('/'):
       return f"{base_path}/{partial_path}"
     else:
       return f"{base_path}{partial_path}"
 
+  def to_dict(self) -> Dict[str, Any]:
+    return {
+      "timestamp": datetime.now().isoformat(),
+      "repos": self._repos,
+    }
+
   def export(self, export_file: Optional[str] = None):
     """Writes the repo report to a json file"""
     filename = export_file or self._cfg.report_path
     with open(filename, "w") as f:
-      json.dump(self._repos, f)
+      json.dump(self.to_dict(), f)
     log.info(f"Borg backup report exported to {filename}")
-
 
   def repo_config_dict(self, repo_config: Dict[str, Any]) -> Dict[str, Any]:
     if repo_config:
+      logpath = repo_config.get(self._cfg.CONFIG_KEY_LOG_PATH)
       return {
         "borg_path": self._cfg.borg_path,
         "path": self.resolve_path(self._cfg.repos_basedir, repo_config[self._cfg.CONFIG_KEY_REPO_PATH]),
-        "logs": self.resolve_path(self._cfg.logs_basedir, repo_config[self._cfg.CONFIG_KEY_LOG_PATH]),
+        "logs": self.resolve_path(self._cfg.logs_basedir, logpath) if logpath else None,
         "pwd": repo_config[self._cfg.CONFIG_KEY_REPO_PWD],
         "cmd": repo_config[self._cfg.CONFIG_KEY_SCRIPT],
       }
@@ -265,13 +276,3 @@ class BorgReporter:
         log.error(f"Unable to scan repo {repo}: {e}")
 
     self.export()
-
-    # # Init the entry for this repo
-    # repo_data = {
-    #     "backups": [],
-    #     "script": repo_config.get("script", ""),
-    #     "last_result": "warning",
-    #     "last_date": "",
-    #     "last_time": "",
-    #     "ctime": time.ctime(),
-    # }

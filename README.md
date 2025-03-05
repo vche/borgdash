@@ -29,3 +29,37 @@ can run backup: api/run/target
 
 - [x] react app bootstrap
 - index layout
+
+## Installation
+docker
+
+## Development
+
+### Reporter
+cd reporter
+Run using config in `etc/config_dev.yaml`
+```
+pixi run withconfig
+```
+
+Run using custom config
+```
+pixi run borgdash-reporter <your config file>
+```
+
+Report is generated in `/tmp/bordash.json` by default or in path specified in config (`report_path`)
+
+### Dashboard
+cd dashboard
+Run development server:
+```
+pixi run dev
+```
+
+Run production server
+```
+pixi run build
+pixi run start
+```
+
+### Build
