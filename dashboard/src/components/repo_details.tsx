@@ -28,7 +28,7 @@ export default function RepoDetails({ repo, archive }: { repo: tBorgRepo, archiv
   return (
     <>
       <RepoDetailsInfo repo={repo} />
-      <RepoRepoDetailsArchives repo={repo} expanded={expanded} expand={setExpanded} />
+      <RepoDetailsArchives repo={repo} expanded={expanded} expand={setExpanded} />
     </>
   )
 }
@@ -80,7 +80,7 @@ export function RepoDetailsInfo({ repo }: { repo: tBorgRepo }) {
   );
 }
 
-export function RepoRepoDetailsArchives({ repo, expanded, expand }:
+export function RepoDetailsArchives({ repo, expanded, expand }:
   {
     repo: tBorgRepo,
     expanded: string | false,
@@ -88,7 +88,6 @@ export function RepoRepoDetailsArchives({ repo, expanded, expand }:
   }
 ) {
   const router = useRouter()
-  // const [expanded, setExpanded] = React.useState<string | false>(false);
   const handleChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
     expand(isExpanded ? panel : false);
   };
@@ -130,7 +129,7 @@ export function RepoRepoDetailsArchives({ repo, expanded, expand }:
                   size="small" fullWidth
                   onClick={() => { router.push(`/logs/${repo.name}/${archive.log.name}`); }}
                 >
-                  Open log fie
+                  Open log file
                 </Button>
               )}
 

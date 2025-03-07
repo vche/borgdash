@@ -6,7 +6,7 @@ export type tBorgSize = {
   dsize: number;
 };
 
-type tBorgLog = {
+export type tBorgLog = {
   archive: string | null;
   datetime: string | null;
   fullpath: string;
@@ -60,4 +60,8 @@ export function get_repos_statuses(report: tBorgReport) {
     });
   }
   return statuses;
+}
+
+export async function load_logfile(logfilepath: string) {
+  return await fs.readFile(logfilepath, "utf8");
 }
