@@ -18,9 +18,9 @@
     "@mui/material-nextjs": "^6.4.3",
     "@toolpad/core": "^0.12.1",
     "next": "15.2.0",
+    "pretty-bytes": "^6.1.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "swr": "^2.3.3"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -19,6 +19,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import prettyBytes from 'pretty-bytes';
 
 
 export default function RepoDetails({ repo, archive }: { repo: tBorgRepo, archive?: string }) {
@@ -152,9 +153,9 @@ export function ArchiveSize({ sizes }: { sizes: tBorgSize }) {
             <TableCell component="th" scope="row" align="right">Deduped size</TableCell>
           </TableRow>
           <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-            <TableCell align="left">{sizes.osize}</TableCell>
-            <TableCell align="center">{sizes.csize}</TableCell>
-            <TableCell align="right">{sizes.dsize}</TableCell>
+            <TableCell align="left">{prettyBytes(sizes.osize)}</TableCell>
+            <TableCell align="center">{prettyBytes(sizes.csize)}</TableCell>
+            <TableCell align="right">{prettyBytes(sizes.dsize)}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
