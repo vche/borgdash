@@ -42,9 +42,13 @@ let report_cache: tBorgReport = undefined;
 export async function load_report_data(force: boolean = false) {
   // Reload if there's no cache or a force reload is required
   if (!report_cache || force) {
-    const file = await fs.readFile("/tmp/bordash.json", "utf8");
-    report_cache = JSON.parse(file);
-    console.log("File loaded yo");
+    try {
+      const file = await fs.readFile("/tmp/bordash.json", "utf8");
+      report_cache = JSON.parse(file);
+      console.log("File loaded yo");
+    } catch (error) {
+      console.log("Error loading file:" + error);
+    }
   }
   return report_cache;
 }

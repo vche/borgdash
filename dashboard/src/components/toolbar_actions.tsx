@@ -9,10 +9,13 @@ import IconButton from "@mui/material/IconButton";
 import ContrastIcon from "@mui/icons-material/Contrast";
 import FormLabel from "@mui/material/FormLabel";
 import RadioGroup from "@mui/material/RadioGroup";
+import Stack from '@mui/material/Stack';
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
+import RefreshIcon from '@mui/icons-material/Refresh';
+import TroubleshootIcon from '@mui/icons-material/Troubleshoot';
 
-export default function ModeSwitcher() {
+export function ModeSwitcher() {
   const { mode, setMode } = useColorScheme();
 
   const handleThemeChange = React.useCallback(
@@ -84,4 +87,56 @@ export default function ModeSwitcher() {
       </Popover>
     </React.Fragment>
   );
+}
+
+export function RescanRepo() {
+  return (
+    <Tooltip title="Rescan the repositories (long operation)" enterDelay={1000}>
+      <div>
+        <IconButton type="button" aria-label="rescan">
+          <TroubleshootIcon />
+        </IconButton>
+      </div>
+    </Tooltip>
+  )
+}
+
+async function reload_reports() {
+  const response = await fetch("/api/reload");
+  return await response.json()
+}
+
+export function ReloadRepoData() {
+  const reload = React.useCallback(
+    (event: React.MouseEvent<HTMLElement>) => {
+      reload_reports().then((report_data) => {
+        console.log("pipo prout")
+        console.log(report_data);
+        // use the provided setter from the layout to reload all pages...
+      }).catch((error) => {
+        console.log(error);
+      });
+    },
+    [],
+  );
+
+  return (
+    <Tooltip title="Reload the repository data" enterDelay={1000}>
+      <div>
+        <IconButton type="button" aria-label="reload" onClick={reload}>
+          <RefreshIcon />
+        </IconButton>
+      </div>
+    </Tooltip>
+  )
+}
+
+export default function ToolbarActions() {
+  return (
+    <Stack direction="row">
+      <ReloadRepoData />
+      <RescanRepo />
+      <ModeSwitcher />
+    </Stack>
+  )
 }

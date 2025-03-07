@@ -7,6 +7,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { type Navigation, NavigationPageItem, NavigationSubheaderItem, Branding } from "@toolpad/core/AppProvider";
 import Chip from "@mui/material/Chip";
 import Image from "next/image";
+import ModeSwitcher from "@/components/mode_switch";
 import borgLogo from "../../public/borg.svg";
 import { load_report_data, get_repos_statuses } from "@/lib/report";
 import { datetime_iso_to_short } from "@/lib/utils";

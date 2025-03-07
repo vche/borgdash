@@ -24,6 +24,17 @@ can run backup: api/run/target
 - [x] python utility basic with setup
 - [x] basic modules to read config and reuse existing from borgweb
 - [x] finish bin
+- [x] react app
+- [x] add framework and modules
+- [ ] implement refresh upon connection // default to backend, re-set when loaded if new datetime
+- [ ] add rescan (call reporter) trigger + loader until finished in the right page
+  - load report data only once in layout
+  - pass it down to other modules
+  - have a useState in client / dashboard layout, initialized to the layout report data
+  - pass the set useState to the toolbar action
+  - re - set it with new loaded data upon refresh
+- [ ] per repo backup trigger
+
 - create cron or other configurable system
 - readme update
 

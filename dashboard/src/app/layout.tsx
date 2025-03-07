@@ -4,9 +4,9 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import type { Metadata, Viewport } from "next";
 import { geistSans, geistMono, roboto } from "@/lib/font";
 import CssBaseline from "@mui/material/CssBaseline";
-import ModeSwitcher from "@/components/mode_switch";
 import { NextAppProvider } from "@toolpad/core/nextjs";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
+import ToolbarActions from "@/components/toolbar_actions";
 import { PageContainer } from "@toolpad/core/PageContainer";
 import borgdash_theme from "@/lib/theme";
 import {
@@ -44,7 +44,7 @@ export default async function RootLayout({
             >
               <DashboardLayout
                 slots={{
-                  toolbarActions: ModeSwitcher,
+                  toolbarActions: ToolbarActions,
                 }}
               >
                 <PageContainer>{children}</PageContainer>
