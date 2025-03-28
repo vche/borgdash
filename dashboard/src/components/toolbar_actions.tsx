@@ -15,7 +15,21 @@ import Radio from "@mui/material/Radio";
 import RefreshIcon from '@mui/icons-material/Refresh';
 import TroubleshootIcon from '@mui/icons-material/Troubleshoot';
 import { ReportContext } from "@/components/dashboard_layout"
-import { useNotifications } from '@toolpad/core/useNotifications';
+import { ShowNotification, useNotifications } from '@toolpad/core/useNotifications';
+import type { tRescanStatus } from "@/lib/rescan";
+import CircularProgress from '@mui/material/CircularProgress';
+
+// Reload and extract report from file
+async function reload_reports() {
+  const response = await fetch("/api/reload");
+  return await response.json()
+}
+
+// Reload and extract report from file
+async function rescan_reports(scan = false) {
+  const response = await fetch("/api/rescan", { method: scan ? "put" : "get" });
+  return await response.json()
+}
 
 // dark/light theme switcher component
 export function ModeSwitcher() {
@@ -84,39 +98,65 @@ export function ModeSwitcher() {
   );
 }
 
+function rescanStatusCheck(
+  rescan_response: tRescanStatus,
+  notify: ShowNotification, reloadCallback: () => void,
+  setLoader: React.Dispatch<React.SetStateAction<boolean>>
+) {
+  if (rescan_response.status == "success") {
+    setLoader(false);
+    console.log(rescan_response.stdout);
+    notify("Repo rescan complete", { autoHideDuration: 3000 });
+    reloadCallback();
+  }
+  else if (rescan_response.status == "error") {
+    setLoader(false);
+    notify("Error, failed to rescan report", { severity: "error", autoHideDuration: 3000 });
+  }
+  else if (rescan_response.status == "running") {
+    const timeoutId = setTimeout(() => {
+      console.log('Delayed message after 2 seconds!');
+      rescan_reports().then((rescan_response) => {
+        console.log(rescan_response.stdout);
+        rescanStatusCheck(rescan_response, notify, reloadCallback, setLoader);
+      });
+    }, 3000);
+
+    // Cleanup function to clear the timeout if the component unmounts
+    return () => clearTimeout(timeoutId);
+  }
+}
+
 export function RescanRepo({ reloadCallback }: { reloadCallback: () => void }) {
+  const notifications = useNotifications();
+  const [loader, setLoader] = React.useState(false);
   const rescan = React.useCallback(
     () => {
-      // trigger scan
       console.log("Rescanning");
-      reloadCallback();
-      // rescan_reports_start().then((report_response) => {
-      //   //ok, set loader and start timer to repoll
-      //   //if poll ok -> hide loader and reload()
-      //   //if poll nok -> hide loader and sow error notification
-      //   //if poll pending and not timeout -> start timer and repoll
-      //   if (set_report_data) { set_report_data(report_response.reportdata); }
-      //   else { console.log("Error, failed to trigger rescan"); }
-      //   reloadCallback();
-      // }).catch((error) => { console.log("Error, failed to rescan report: " + error); });
+      rescan_reports(true).then((rescan_response) => {
+        setLoader(true);
+        notifications.show("Repo rescan started, it can take several minutes", { autoHideDuration: 3000 });
+        rescanStatusCheck(rescan_response, notifications.show, reloadCallback, setLoader);
+      }).catch((error) => { console.log("Error, failed to rescan report: " + error); });
     },
-    [reloadCallback],
+    [reloadCallback, notifications],
   );
+
   return (
     <Tooltip title="Rescan the repositories (long operation)" enterDelay={1000}>
       <div>
-        <IconButton type="button" aria-label="rescan" onClick={rescan}>
-          <TroubleshootIcon />
-        </IconButton>
+        {loader ? (
+          <IconButton type="button" aria-label="rescan" onClick={() => { console.log("gnou") }}>
+            <CircularProgress size={20} />
+          </IconButton>
+        ) : (
+          <IconButton type="button" aria-label="rescan" onClick={rescan}>
+            <TroubleshootIcon />
+          </IconButton>
+        )}
       </div>
     </Tooltip>
   )
-}
-
-// Reload and extract report from file
-async function reload_reports() {
-  const response = await fetch("/api/reload");
-  return await response.json()
 }
 
 // Component reloading data from file and refreshing the UI
