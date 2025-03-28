@@ -14,22 +14,19 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
 import RefreshIcon from '@mui/icons-material/Refresh';
 import TroubleshootIcon from '@mui/icons-material/Troubleshoot';
+import { ReportContext } from "@/components/dashboard_layout"
 
+// dark/light theme switcher component
 export function ModeSwitcher() {
   const { mode, setMode } = useColorScheme();
-
   const handleThemeChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setMode(event.target.value as "light" | "dark" | "system");
     },
     [setMode],
   );
-
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement | null>(
-    null,
-  );
-
+  const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement | null>(null,);
   const toggleMenu = React.useCallback(
     (event: React.MouseEvent<HTMLElement>) => {
       setMenuAnchorEl(isMenuOpen ? null : event.currentTarget);
@@ -38,10 +35,7 @@ export function ModeSwitcher() {
     [isMenuOpen],
   );
 
-  if (!mode) {
-    return null;
-  }
-
+  if (!mode) { return null; }
   return (
     <React.Fragment>
       <Tooltip title="Theme settings" enterDelay={1000}>
@@ -89,11 +83,28 @@ export function ModeSwitcher() {
   );
 }
 
-export function RescanRepo() {
+export function RescanRepo({ reloadCallback }: { reloadCallback: () => void }) {
+  const rescan = React.useCallback(
+    () => {
+      // trigger scan
+      console.log("Rescanning");
+      reloadCallback();
+      // rescan_reports_start().then((report_response) => {
+      //   //ok, set loader and start timer to repoll
+      //   //if poll ok -> hide loader and reload()
+      //   //if poll nok -> hide loader and sow error notification
+      //   //if poll pending and not timeout -> start timer and repoll
+      //   if (set_report_data) { set_report_data(report_response.reportdata); }
+      //   else { console.log("Error, failed to trigger rescan"); }
+      //   reloadCallback();
+      // }).catch((error) => { console.log("Error, failed to rescan report: " + error); });
+    },
+    [reloadCallback],
+  );
   return (
     <Tooltip title="Rescan the repositories (long operation)" enterDelay={1000}>
       <div>
-        <IconButton type="button" aria-label="rescan">
+        <IconButton type="button" aria-label="rescan" onClick={rescan}>
           <TroubleshootIcon />
         </IconButton>
       </div>
@@ -101,29 +112,18 @@ export function RescanRepo() {
   )
 }
 
+// Reload and extract report from file
 async function reload_reports() {
   const response = await fetch("/api/reload");
   return await response.json()
 }
 
-export function ReloadRepoData() {
-  const reload = React.useCallback(
-    (event: React.MouseEvent<HTMLElement>) => {
-      reload_reports().then((report_data) => {
-        console.log("pipo prout")
-        console.log(report_data);
-        // use the provided setter from the layout to reload all pages...
-      }).catch((error) => {
-        console.log(error);
-      });
-    },
-    [],
-  );
-
+// Component reloading data from file and refreshing the UI
+export function ReloadRepoData({ reloadCallback }: { reloadCallback: () => void }) {
   return (
     <Tooltip title="Reload the repository data" enterDelay={1000}>
       <div>
-        <IconButton type="button" aria-label="reload" onClick={reload}>
+        <IconButton type="button" aria-label="reload" onClick={reloadCallback}>
           <RefreshIcon />
         </IconButton>
       </div>
@@ -132,10 +132,21 @@ export function ReloadRepoData() {
 }
 
 export default function ToolbarActions() {
+  const [, set_report_data] = React.useContext(ReportContext);
+  const reload = React.useCallback(
+    () => {
+      reload_reports().then((report_response) => {
+        if (set_report_data) { set_report_data(report_response.reportdata); }
+        else { console.log("Error, report data context is not set"); }
+      }).catch((error) => { console.log("Error, failed to reload report: " + error); });
+    },
+    [set_report_data],
+  );
+
   return (
     <Stack direction="row">
-      <ReloadRepoData />
-      <RescanRepo />
+      <ReloadRepoData reloadCallback={reload} />
+      <RescanRepo reloadCallback={reload} />
       <ModeSwitcher />
     </Stack>
   )

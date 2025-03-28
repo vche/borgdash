@@ -1,3 +1,4 @@
+// This module is server side only and cannot be used client side as it's reading files from filesystem
 import { promises as fs } from "fs";
 
 export type tBorgSize = {
@@ -45,25 +46,11 @@ export async function load_report_data(force: boolean = false) {
     try {
       const file = await fs.readFile("/tmp/bordash.json", "utf8");
       report_cache = JSON.parse(file);
-      console.log("File loaded yo");
     } catch (error) {
       console.log("Error loading file:" + error);
     }
   }
   return report_cache;
-}
-
-export function get_repos_statuses(report: tBorgReport) {
-  // Return status count of each report: [successes, errors, unkown]
-  const statuses = [0, 0, 0];
-  if (report && report.repos) {
-    Object.values(report.repos).map((repo) => {
-      if (repo.status == null) statuses[2]++;
-      else if (repo.status) statuses[0]++;
-      else statuses[1]++;
-    });
-  }
-  return statuses;
 }
 
 export async function load_logfile(logfilepath: string) {

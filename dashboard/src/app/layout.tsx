@@ -4,15 +4,8 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import type { Metadata, Viewport } from "next";
 import { geistSans, geistMono, roboto } from "@/lib/font";
 import CssBaseline from "@mui/material/CssBaseline";
-import { NextAppProvider } from "@toolpad/core/nextjs";
-import { DashboardLayout } from "@toolpad/core/DashboardLayout";
-import ToolbarActions from "@/components/toolbar_actions";
-import { PageContainer } from "@toolpad/core/PageContainer";
-import borgdash_theme from "@/lib/theme";
-import {
-  BORGDASH_BRANDING,
-  getNavigationConfig
-} from "@/components/dashboard_layout";
+import BorgdashLayout from "@/components/dashboard_layout";
+import { load_report_data } from "@/lib/report";
 
 export const metadata: Metadata = {
   title: "Borgdash",
@@ -28,6 +21,7 @@ export const viewport: Viewport = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const report_data = await load_report_data();
   return (
     <html lang="en">
       <head></head>
@@ -37,19 +31,7 @@ export default async function RootLayout({
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
           <CssBaseline />
           <React.Suspense fallback={<LinearProgress />}>
-            <NextAppProvider
-              navigation={await getNavigationConfig()}
-              theme={borgdash_theme}
-              branding={BORGDASH_BRANDING}
-            >
-              <DashboardLayout
-                slots={{
-                  toolbarActions: ToolbarActions,
-                }}
-              >
-                <PageContainer>{children}</PageContainer>
-              </DashboardLayout>
-            </NextAppProvider>
+            <BorgdashLayout reportdata={report_data}>{children}</BorgdashLayout>
           </React.Suspense>
           );
         </AppRouterCacheProvider>

@@ -1,12 +1,14 @@
+"use client";
 import * as React from "react";
 import { notFound } from 'next/navigation'
 import RepoDetails from "@/components/repo_details";
-import { load_report_data } from "@/lib/report";
+import { ReportContext } from "@/components/dashboard_layout"
+import { useParams } from 'next/navigation'
 
 
-export default async function Page({ params }: { params: Promise<{ repo: string[] }>; }) {
-  const { repo } = await params;
-  const full_report_data = await load_report_data();
+export default function Page() {
+  const { repo } = useParams<{ repo: string[] }>();
+  const [full_report_data,] = React.useContext(ReportContext);
 
   const full_repos_data = full_report_data?.repos;
   if (full_repos_data && repo[0] in full_repos_data) {
