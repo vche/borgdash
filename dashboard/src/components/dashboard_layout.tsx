@@ -18,7 +18,6 @@ import { NextAppProvider } from "@toolpad/core/nextjs";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import ToolbarActions from "@/components/toolbar_actions";
 
-
 export type tReportContextData = [tBorgReport, React.Dispatch<tBorgReport>?];
 export type tReportContext = React.Context<tReportContextData>;
 

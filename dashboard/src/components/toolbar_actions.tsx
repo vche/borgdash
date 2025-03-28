@@ -15,6 +15,7 @@ import Radio from "@mui/material/Radio";
 import RefreshIcon from '@mui/icons-material/Refresh';
 import TroubleshootIcon from '@mui/icons-material/Troubleshoot';
 import { ReportContext } from "@/components/dashboard_layout"
+import { useNotifications } from '@toolpad/core/useNotifications';
 
 // dark/light theme switcher component
 export function ModeSwitcher() {
@@ -132,15 +133,22 @@ export function ReloadRepoData({ reloadCallback }: { reloadCallback: () => void 
 }
 
 export default function ToolbarActions() {
+  const notifications = useNotifications();
   const [, set_report_data] = React.useContext(ReportContext);
   const reload = React.useCallback(
     () => {
       reload_reports().then((report_response) => {
-        if (set_report_data) { set_report_data(report_response.reportdata); }
+        if (set_report_data) {
+          set_report_data(report_response.reportdata);
+          notifications.show("Report data reloaded", { autoHideDuration: 3000 });
+        }
         else { console.log("Error, report data context is not set"); }
-      }).catch((error) => { console.log("Error, failed to reload report: " + error); });
+      }).catch((error) => {
+        console.log(`Error, failed to reload report: ${error}`);
+        notifications.show(`Error, failed to reload report: ${error}`, { severity: "error", autoHideDuration: 3000 });
+      });
     },
-    [set_report_data],
+    [set_report_data, notifications],
   );
 
   return (
