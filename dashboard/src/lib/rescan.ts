@@ -1,3 +1,4 @@
+import { CONFIG_PATH, CONFIG_BIN_PATH } from "@/lib/config";
 import { ChildProcess, spawn } from "child_process";
 
 export type tRescanStatus = { status: "success" | "error" | "running" | null, stdout: string | null, stderr: string | null };
@@ -9,13 +10,13 @@ let rescanStderr: string = "";
 
 export function rescan_is_running() {
   // If there is a process, and no exit code, it is running
-  return (rescanProcess && rescanProcess.exitCode == null) ? true : false;
+  return (rescanProcess && rescanProcess.exitCode == null && !rescanProcess.killed) ? true : false;
 }
 
 export function rescan_get_status() {
   const scan_status: tRescanStatus = { status: null, stdout: null, stderr: null };
   if (rescanProcess) {
-    if (rescanProcess.exitCode == null) scan_status.status = "running";
+    if (rescanProcess.exitCode == null && !rescanProcess.killed) scan_status.status = "running";
     else if (rescanProcess.exitCode == 0) scan_status.status = "success";
     else scan_status.status = "error";
     scan_status.stdout = rescanStdout ? rescanStdout : null;
@@ -25,8 +26,13 @@ export function rescan_get_status() {
   return scan_status;
 }
 
+export function rescan_stop() {
+  console.log("process killed");
+  rescanProcess?.kill();
+}
+
 export function rescan_start() {
-  rescanProcess = spawn("/Users/viv/dev/borgdash/dashboard/stub.sh", ["gnou"], { timeout: 300000 });
+  rescanProcess = spawn(CONFIG_BIN_PATH, [], { timeout: 300000 });
   rescanStdout = "";
   rescanStderr = "";
 
@@ -40,5 +46,5 @@ export function rescan_start() {
     rescanStderr = rescanStderr.concat(data);
   });
   rescanProcess.on('error', (error) => { console.log(`error: ${error.message}`); });
-  // rescanProcess.on("close", code => { console.log(`child process exited with code ${code}`); });
+  rescanProcess.on("close", code => { console.log(`child process exited with code ${code}`); });
 }

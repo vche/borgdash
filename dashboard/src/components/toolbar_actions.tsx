@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
 import Box from "@mui/material/Box";
+import Button from '@mui/material/Button';
 import FormControl from "@mui/material/FormControl";
 import { useColorScheme } from "@mui/material/styles";
 import Popover from "@mui/material/Popover";
@@ -18,6 +19,14 @@ import { ReportContext } from "@/components/dashboard_layout"
 import { ShowNotification, useNotifications } from '@toolpad/core/useNotifications';
 import type { tRescanStatus } from "@/lib/rescan";
 import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Typography from "@mui/material/Typography";
+import TerminalIcon from '@mui/icons-material/Terminal';
+import { DialogsProvider, useDialogs } from '@toolpad/core/useDialogs';
 
 // Reload and extract report from file
 async function reload_reports() {
@@ -26,8 +35,8 @@ async function reload_reports() {
 }
 
 // Reload and extract report from file
-async function rescan_reports(scan = false) {
-  const response = await fetch("/api/rescan", { method: scan ? "put" : "get" });
+async function rescan_reports(scan = false, cancel = false) {
+  const response = await fetch("/api/rescan", { method: scan ? "put" : (cancel ? "delete" : "get") });
   return await response.json()
 }
 
@@ -101,11 +110,13 @@ export function ModeSwitcher() {
 function rescanStatusCheck(
   rescan_response: tRescanStatus,
   notify: ShowNotification, reloadCallback: () => void,
-  setLoader: React.Dispatch<React.SetStateAction<boolean>>
+  setLoader: React.Dispatch<React.SetStateAction<boolean>>,
+  setContent: React.Dispatch<React.SetStateAction<string | null>>
 ) {
+  setContent(`--------- Standard output ---------\n${rescan_response.stdout}\n\n--------- Error output ---------\n${rescan_response.stderr}`);
+
   if (rescan_response.status == "success") {
     setLoader(false);
-    console.log(rescan_response.stdout);
     notify("Repo rescan complete", { autoHideDuration: 3000 });
     reloadCallback();
   }
@@ -117,8 +128,7 @@ function rescanStatusCheck(
     const timeoutId = setTimeout(() => {
       console.log('Delayed message after 2 seconds!');
       rescan_reports().then((rescan_response) => {
-        console.log(rescan_response.stdout);
-        rescanStatusCheck(rescan_response, notify, reloadCallback, setLoader);
+        rescanStatusCheck(rescan_response, notify, reloadCallback, setLoader, setContent);
       });
     }, 3000);
 
@@ -127,33 +137,88 @@ function rescanStatusCheck(
   }
 }
 
+export function RescanOutput({ isOpen, handleClose, content }:
+  {
+    isOpen: boolean,
+    handleClose: () => void,
+    content: string | null
+  }
+) {
+  const dialogs = useDialogs();
+  const cancelProcess = async () => {
+    const confirmed = await dialogs.confirm('Abort the running rescan operation ?', {
+      okText: 'Yes',
+      cancelText: 'No',
+    });
+    if (confirmed) {
+      await rescan_reports(false, true);
+    }
+  }
+
+  return (
+    <Dialog
+      open={isOpen}
+      onClose={handleClose}
+      scroll='paper'
+      fullWidth
+      maxWidth='lg'
+      aria-labelledby="scroll-dialog-title"
+      aria-describedby="scroll-dialog-description"
+    >
+      <DialogTitle id="scroll-dialog-title" align="center">
+        <Typography>Rescan process output</Typography>
+      </DialogTitle>
+      <DialogContent dividers={true}>
+        <DialogContentText
+          id="scroll-dialog-description"
+          tabIndex={-1}
+          sx={{ whiteSpace: "pre-wrap" }}
+        >
+          {content ? content : "No output, no scan ran yet."}
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <DialogsProvider>
+          <Button onClick={cancelProcess}>Cancel operation</Button>
+        </DialogsProvider>
+        <Button onClick={handleClose}>Close</Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
 export function RescanRepo({ reloadCallback }: { reloadCallback: () => void }) {
   const notifications = useNotifications();
   const [loader, setLoader] = React.useState(false);
+  const [openOutput, setOpenOutput] = React.useState(false);
+  const [content, setContent] = React.useState<string | null>(null);
   const rescan = React.useCallback(
     () => {
       console.log("Rescanning");
       rescan_reports(true).then((rescan_response) => {
         setLoader(true);
         notifications.show("Repo rescan started, it can take several minutes", { autoHideDuration: 3000 });
-        rescanStatusCheck(rescan_response, notifications.show, reloadCallback, setLoader);
+        rescanStatusCheck(rescan_response, notifications.show, reloadCallback, setLoader, setContent);
       }).catch((error) => { console.log("Error, failed to rescan report: " + error); });
     },
     [reloadCallback, notifications],
   );
+  const handleOutputClose = () => { setOpenOutput(false); };
 
   return (
     <Tooltip title="Rescan the repositories (long operation)" enterDelay={1000}>
       <div>
         {loader ? (
-          <IconButton type="button" aria-label="rescan" onClick={() => { console.log("gnou") }}>
-            <CircularProgress size={20} />
-          </IconButton>
+          <CircularProgress size={20} />
         ) : (
           <IconButton type="button" aria-label="rescan" onClick={rescan}>
             <TroubleshootIcon />
           </IconButton>
         )}
+        <IconButton type="button" aria-label="output" onClick={() => { setOpenOutput(true); }}>
+          <TerminalIcon />
+        </IconButton>
+        <RescanOutput isOpen={openOutput} handleClose={handleOutputClose} content={content} />
       </div>
     </Tooltip>
   )

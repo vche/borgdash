@@ -243,8 +243,10 @@ class BorgReporter:
   def export(self, export_file: Optional[str] = None):
     """Writes the repo report to a json file"""
     filename = export_file or self._cfg.report_path
-    with open(filename, "w") as f:
+    temp_filename = f"{filename}.temp"
+    with open(temp_filename, "w") as f:
       json.dump(self.to_dict(), f)
+    os.rename(temp_filename, filename)
     log.info(f"Borg backup report exported to {filename}")
 
   def repo_config_dict(self, repo_config: Dict[str, Any]) -> Dict[str, Any]:

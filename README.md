@@ -27,21 +27,17 @@ can run backup: api/run/target
 - [x] react app
 - [x] add framework and modules
 - [x] implement refresh upon connection // default to backend, re-set when loaded if new datetime
-- [ ] add rescan (call reporter) trigger + loader until finished in the right page
-  - add window upon loader click that displays output
-  - add call using shell command to trigger
+- [x] add rescan (call reporter) trigger + loader until finished in the right page
 - [ ] add config module loaded from json env var
   - add config like report path, command trigger, max run timeout
   - implement max run timeout in timer also maybe to avoid infinite timers
+- [ ] add reporter discord notifications
 - [ ] per repo backup trigger
   - implement api for triggering commands
   - configure ssh remote trigger or stuff....
-
-- create cron or other configurable system
-- readme update
-
-- [x] react app bootstrap
-- index layout
+- [ ] create docker container
+  - create cron or other configurable system
+  - readme update
 
 ## Installation
 docker

@@ -7,7 +7,9 @@ channels = ["conda-forge"]
 platforms = ["osx-arm64", 'linux-64']
 
 [tasks]
-dev = { cmd = "npm run dev", depends-on = ["install"], cwd = "./" }
+dev = { cmd = "export BORGDASH_CONFIG=../etc/config.dev.yaml && npm run dev", depends-on = [
+  "install",
+], cwd = "./" }
 install = { cmd = "npm install", cwd = "./" }
 build = { cmd = "npm run build", depends-on = ["install"], cwd = "./" }
 
