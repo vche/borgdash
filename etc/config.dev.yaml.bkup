@@ -14,7 +14,7 @@ reporter:
   # Enable alarming on discord channel for failed backups
   discord:
     webhook: "1420474818:https://discord.com/api/webhooks/1127505560233333090/dGZjhM32M4Vd-Iy1B9H"
-    webhook_user: "Borg backup dashboard"
+    webhook_user: "Borg backup monitor"
     message: "**{} Backups failed**:\n\n{}"
     message_device: "- {}: Failed with status {} on {} at {}\n"
 

@@ -1,6 +1,10 @@
 import * as React from "react";
-import Typography from "@mui/material/Typography";
+import { get_text_config } from "@/lib/config";
+import ConfigEditor from "@/components/config_editor";
 
 export default async function Page() {
-  return <Typography>Page for config </Typography>;
+  const config_data = await get_text_config();
+  return (
+    <ConfigEditor config_data={config_data} />
+  );
 }

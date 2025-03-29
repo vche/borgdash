@@ -1,5 +1,7 @@
-import { CONFIG_PATH, CONFIG_BIN_PATH } from "@/lib/config";
 import { ChildProcess, spawn } from "child_process";
+import { config } from "@/lib/config";
+const reporter_path = config.dashboard.reporter_path;
+const rescan_timeout_ms = config.dashboard.rescan_timeout_ms;
 
 export type tRescanStatus = { status: "success" | "error" | "running" | null, stdout: string | null, stderr: string | null };
 
@@ -32,7 +34,7 @@ export function rescan_stop() {
 }
 
 export function rescan_start() {
-  rescanProcess = spawn(CONFIG_BIN_PATH, [], { timeout: 300000 });
+  rescanProcess = spawn(reporter_path, [], { timeout: rescan_timeout_ms });
   rescanStdout = "";
   rescanStderr = "";
 

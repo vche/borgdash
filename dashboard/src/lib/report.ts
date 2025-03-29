@@ -1,6 +1,8 @@
 // This module is server side only and cannot be used client side as it's reading files from filesystem
 import { promises as fs } from "fs";
-import { CONFIG_REPORT_PATH } from "@/lib/config";
+import { config } from "@/lib/config";
+const report_path = config.reporter.report_path;
+
 export type tBorgSize = {
   osize: number;
   csize: number;
@@ -44,7 +46,7 @@ export async function load_report_data(force: boolean = false) {
   // Reload if there's no cache or a force reload is required
   if (!report_cache || force) {
     try {
-      const file = await fs.readFile(CONFIG_REPORT_PATH, "utf8");
+      const file = await fs.readFile(report_path, "utf8");
       report_cache = JSON.parse(file);
     } catch (error) {
       console.log("Error loading file:" + error);

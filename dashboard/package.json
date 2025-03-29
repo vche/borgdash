@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@codemirror/lang-yaml": "^6.1.2",
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
@@ -17,10 +18,15 @@
     "@mui/material": "^6.4.6",
     "@mui/material-nextjs": "^6.4.3",
     "@toolpad/core": "^0.12.1",
-    "next": "15.2.0",
+    "@uiw/codemirror-extensions-basic-setup": "^4.23.10",
+    "@uiw/codemirror-extensions-color": "^4.23.10",
+    "@uiw/codemirror-theme-monokai": "^4.23.10",
+    "@uiw/react-codemirror": "^4.23.10",
+    "next": "^15.2.4",
     "pretty-bytes": "^6.1.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "yaml": "^2.7.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
