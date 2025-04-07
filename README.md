@@ -30,7 +30,7 @@ can run backup: api/run/target
 - [x] add rescan (call reporter) trigger + loader until finished in the right page
 - [x] add config module loaded from json env var
 - [x] add reporter discord notifications
-- [ ] add report full path/ssh access info
+- [x] add report full path/ssh access info
 - [ ] add repo button to extract?
 - [ ] create docker container
   - create cron or other configurable system
