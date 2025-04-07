@@ -16,8 +16,10 @@ test = { cmd = ["pytest", "test"], cwd = "./" }
 release = { depends-on = ["mypy", "test"] }
 
 [dependencies]
-python = ">=3.13.2,<3.14"
+python = ">=3.12,<3.13"
 pip = ">=25.0.1,<26"
 pyaml = ">=25.1.0,<26"
 mypy = ">=1.15.0,<2"
 types-pyyaml = ">=6.0.12.20241230,<7"
+"discord.py" = ">=2.3.2,<3"
+requests = ">=2.32.3,<3"

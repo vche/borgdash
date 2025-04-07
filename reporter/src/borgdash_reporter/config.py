@@ -10,7 +10,7 @@ class Config(object):
   DEFAULT_LOGS_BASEDIR = "/logs"
   DEFAULT_REPOS_BASEDIR = "/repos"
   DEFAULT_ALARM_MESSAGE = "**{} Backups failed**:\n\n{}"
-  DEFAULT_ALARM_MESSAGE_DEV = "- {}: Failed with status {} on {} at {}\n"
+  DEFAULT_ALARM_MESSAGE_DEV = "- {}: Failed with status {} on {}\n"
 
   CONFIG_KEY_REPORTER = "reporter"
   CONFIG_KEY_REPORT_PATH = "report_path"

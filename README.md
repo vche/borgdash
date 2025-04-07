@@ -29,7 +29,9 @@ can run backup: api/run/target
 - [x] implement refresh upon connection // default to backend, re-set when loaded if new datetime
 - [x] add rescan (call reporter) trigger + loader until finished in the right page
 - [x] add config module loaded from json env var
-- [ ] add reporter discord notifications
+- [x] add reporter discord notifications
+- [ ] add report full path/ssh access info
+- [ ] add repo button to extract?
 - [ ] create docker container
   - create cron or other configurable system
   - readme update
@@ -45,28 +47,40 @@ docker
 ## Development
 
 ### Reporter
+
+```sh
 cd reporter
-Run using config in `etc/config_dev.yaml`
+pixi install
+pixi run build
 ```
+
+Run using config in `etc/config_dev.yaml`
+```sh
 pixi run withconfig
 ```
 
 Run using custom config
-```
+```sh
 pixi run borgdash-reporter <your config file>
 ```
 
 Report is generated in `/tmp/bordash.json` by default or in path specified in config (`report_path`)
 
 ### Dashboard
+
+```sh
 cd dashboard
-Run development server:
+pixi install
+pixi run build
 ```
+
+Run development server:
+```sh
 pixi run dev
 ```
 
 Run production server
-```
+```sh
 pixi run build
 pixi run start
 ```
