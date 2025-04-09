@@ -57,5 +57,5 @@ requests = ">=2.32.3,<3"
 
 [tool.pixi.tasks]
 build = { cmd = "pip install -e .", cwd = "./" }
-withenv = "export BORGDASH_CONFIG=../etc/config.dev.yaml && borgdash-reporter"
-withconfig = { cmd = ["borgdash-reporter", "../etc/config.dev.yaml"] }
+withenv = "export BORGDASH_CONFIG=../etc/config_dev.yaml && borgdash-reporter"
+withconfig = { cmd = ["borgdash-reporter", "../etc/config_dev.yaml"] }

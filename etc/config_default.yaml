@@ -1,0 +1,40 @@
+dashboard:
+  # Path to the reporter binary to run to regenerate the borg report
+  reporter_path: "/reporter/.pixi/envs/default/bin/borgdash-reporter"
+  # UI Timeout for borg report generation.
+  rescan_timeout_ms: 300000
+
+reporter:
+  # Path where to store the borg report containing the report data
+  report_path: "/etc/borgdash_report.json"
+  # Path to the borg binary
+  borg_path: "/usr/bin/borg"
+
+  # Base directory for relative paths specified in repos config's 'log_path'.
+  # Prepended if the repo path is relative (doesn't start with /)
+  logs_basedir: "/repos_logs"
+  # Base directory for relative paths specified in repos config's `repo path`.
+  # Can be ssh url. If password is not specified, ssh agent must be configured to enable password less connection.
+  # Used if the repo path is relative (doesn't start with / or ssh://)
+  # repos_basedir: "ssh://user:pass@192.168.0.198/repos"
+  repos_basedir: "/repos"
+
+  # Enable alarming on discord channel for failed backups 90/
+  # discord:
+  #   webhook: "https://discord.com/api/webhooks/xxxxxxxx/yyyyy"
+  #   webhook_user: "Borg backup dashboard"
+  #   # First {}: backups count, second: list of message_bkup for each failed bkup
+  #   message: "**{} Backups failed**:\n\n{}\nSee [web dashboard](http://127.0.0.1:3000) for details"
+  #   # First {}: backup name, second: status, third: date/time
+  #   message_bkup: "- **{}**: Failed with status `{}` on {}\n"
+# repos:
+#   # Repo  name
+#   "repo_test":
+#     # Repo absolute path or relative to repos_basedir
+#     "repo_path": "/repo_test"
+#     # Optional repo logs absolute path, or relative to the main logs_basedir
+#     "log_path": "/repo_test_logs"
+#     # Repo password. TODO: obfuscate
+#     "repo_pwd": "backup"
+#     # Optional: Command/script to run to manually start a backup.
+#     "script": "script"

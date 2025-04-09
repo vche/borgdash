@@ -38,8 +38,8 @@ let config_cache: tConfig | null = null;
 let textconfig_cache: string | null = null;
 
 // Export config paths and content
-export const CONFIG_PATH = env.BORGDASH_CONFIG ? env.BORGDASH_CONFIG : "config.yaml";
-export const config = await get_config();
+export const CONFIG_PATH = env.BORGDASH_CONFIG ? env.BORGDASH_CONFIG : "../etc/config.yaml";
+const DEFAULT_CONFIG_PATH = "../etc/config_default.yaml";
 
 // Default config it none existing
 const DEFAULT_CONFIG: tConfig = {
@@ -55,6 +55,7 @@ const DEFAULT_CONFIG: tConfig = {
   },
   report: {}
 }
+export const config = await get_config();
 
 export async function get_config(force: boolean = false): Promise<tConfig> {
   const [config_data,] = await load_config(force);
@@ -66,18 +67,34 @@ export async function get_text_config(force: boolean = false): Promise<string> {
   return config_text;
 }
 
+async function load_config_file(file_path: string, default_content?: tConfig): Promise<[tConfig, string]> {
+  // Load a yaml file, parse it and return content as dict and text. If error, use default content or raise error
+  try {
+    textconfig_cache = await fs.readFile(file_path, "utf8");
+    config_cache = YAML.parse(textconfig_cache);
+    if (!config_cache) throw new Error("Unable to parse yaml");
+    console.log(`Loaded config file ${file_path}`);
+  } catch {
+    // console.debug(`Couldn't load file ${file_path}: ${error}.`);
+    if (default_content) {
+      // If a default content is specified, return it, otherwise throw an error
+      console.log(`Loading hardcoded config`);
+      config_cache = default_content;
+      textconfig_cache = YAML.stringify(config_cache);
+    }
+    else throw new Error("Unable to parse yaml");
+  }
+  return [config_cache, textconfig_cache];
+}
+
 async function load_config(force: boolean = false): Promise<[tConfig, string]> {
   // Reload if there's no cache or a force reload is required
   if (!config_cache || !textconfig_cache || force) {
     try {
-      textconfig_cache = await fs.readFile(CONFIG_PATH, "utf8");
-      config_cache = YAML.parse(textconfig_cache);
-      console.log("config parsed:" + config_cache);
-      if (!config_cache) throw new Error("Unable to parse yaml");
-    } catch (error) {
-      console.log(`Error loading file ${CONFIG_PATH}: ${error}`);
-      config_cache = DEFAULT_CONFIG
-      textconfig_cache = YAML.stringify(config_cache);
+      [config_cache, textconfig_cache] = await load_config_file(CONFIG_PATH);
+    } catch {
+      // Load the default config, or the hardcoded one if everything goes wrong
+      [config_cache, textconfig_cache] = await load_config_file(DEFAULT_CONFIG_PATH, DEFAULT_CONFIG);
     }
   }
   return [config_cache, textconfig_cache];
@@ -87,7 +104,7 @@ export async function save_config(config?: string) {
   // Reload if there's no cache or a force reload is required
   try {
     const config_data = config ? config : YAML.stringify(config_cache);
-    console.log(`Savinf ${config_data}`);
+    console.log(`Saving config to ${CONFIG_PATH}`);
     await fs.writeFile(CONFIG_PATH, config_data);
     console.log(`Config file saved to ${CONFIG_PATH}`);
   } catch (error) {

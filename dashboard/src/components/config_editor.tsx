@@ -12,17 +12,29 @@ export async function saveconfig(textconfig: string) {
   await fetch("/api/config", { method: "put", body: JSON.stringify({ 'configdata': textconfig }) });
 }
 
-export default function ConfigEditor({ config_data }: { config_data: string }) {
+export async function readtextconfig() {
+  const response = await fetch("/api/config?format=text&force=true", { method: "get" });
+  return await response.json()
+}
+
+export default function ConfigEditor() {
   // code mirror Doc: https://uiwjs.github.io/react-codemirror/
   const notifications = useNotifications();
-  const [value, setValue] = React.useState(config_data);
+  const [value, setValue] = React.useState("");
   const onChange = React.useCallback((val: string) => { setValue(val); }, []);
   const onSave = React.useCallback(() => {
-    console.log('Saving:', value);
     saveconfig(value).then(() => {
       notifications.show("Config saved, restart server to reload.", { autoHideDuration: 3000 });
     });
   }, [value, notifications]);
+
+  React.useEffect(() => {
+    readtextconfig().then((data) => {
+      setValue(data.configdata);
+    }).catch((error) => {
+      console.log(error);
+    });
+  }, []);
 
   return (
     <>

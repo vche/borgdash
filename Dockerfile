@@ -4,7 +4,7 @@ FROM ghcr.io/prefix-dev/pixi:latest AS build
 ADD pixi.toml /
 ADD dashboard /dashboard
 ADD reporter /reporter/
-ADD etc /etc
+ADD etc/config_default.yaml /etc
 
 # Set up environment
 ENV BORGDASH_CONFIG=/etc/config.yaml
