@@ -3,4 +3,5 @@
 .ropeproject
 .pixi
 __pycache__
+*.egg-info/
 

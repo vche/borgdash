@@ -1,18 +1,22 @@
 [build-system]
 requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
+# build-backend = "hatchling.build"
+# requires = ["hatchling"]
 
 [project]
 name = "borgdash-reporter"
 authors = [{ name = "Vivien Chene", email = "viv@vivc.org" }]
 description = "Borg backup report generation"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12,<3.13"
 keywords = ["python", "tool", "borg"]
 # license = {text = "BSD-3-Clause"}
 classifiers = ["Programming Language :: Python :: 3"]
 dependencies = [
   "pyaml",
+  "discord.py",
+  "requests",
   #     'importlib-metadata; python_version<"3.10"',
 ]
 dynamic = ["version"]
@@ -34,3 +38,24 @@ venv = "default"
 [[tool.mypy.overrides]]
 module = ["borgdash_reporter.*"]
 ignore_missing_imports = true
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["osx-arm64", 'linux-64', 'linux-aarch64']
+
+[tool.pixi.pypi-dependencies]
+borgdash-reporter = { path = ".", editable = true }
+
+[tool.pixi.dependencies]
+python = ">=3.12,<3.13"
+pip = ">=25.0.1,<26"
+pyaml = ">=25.1.0,<26"
+mypy = ">=1.15.0,<2"
+types-pyyaml = ">=6.0.12.20241230,<7"
+"discord.py" = ">=2.3.2,<3"
+requests = ">=2.32.3,<3"
+
+[tool.pixi.tasks]
+build = { cmd = "pip install -e .", cwd = "./" }
+withenv = "export BORGDASH_CONFIG=../etc/config.dev.yaml && borgdash-reporter"
+withconfig = { cmd = ["borgdash-reporter", "../etc/config.dev.yaml"] }

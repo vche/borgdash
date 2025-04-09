@@ -137,10 +137,10 @@ function rescanStatusCheck(
   }
 }
 
-export function RescanOutput({ isOpen, handleClose, content }:
+export function RescanOutput({ isOpen, handleCloseAction, content }:
   {
     isOpen: boolean,
-    handleClose: () => void,
+    handleCloseAction: () => void,
     content: string | null
   }
 ) {
@@ -158,7 +158,7 @@ export function RescanOutput({ isOpen, handleClose, content }:
   return (
     <Dialog
       open={isOpen}
-      onClose={handleClose}
+      onClose={handleCloseAction}
       scroll='paper'
       fullWidth
       maxWidth='lg'
@@ -181,13 +181,13 @@ export function RescanOutput({ isOpen, handleClose, content }:
         <DialogsProvider>
           <Button onClick={cancelProcess}>Cancel operation</Button>
         </DialogsProvider>
-        <Button onClick={handleClose}>Close</Button>
+        <Button onClick={handleCloseAction}>Close</Button>
       </DialogActions>
     </Dialog>
   );
 }
 
-export function RescanRepo({ reloadCallback }: { reloadCallback: () => void }) {
+export function RescanRepo({ reloadCallbackAction }: { reloadCallbackAction: () => void }) {
   const notifications = useNotifications();
   const [loader, setLoader] = React.useState(false);
   const [openOutput, setOpenOutput] = React.useState(false);
@@ -198,10 +198,10 @@ export function RescanRepo({ reloadCallback }: { reloadCallback: () => void }) {
       rescan_reports(true).then((rescan_response) => {
         setLoader(true);
         notifications.show("Repo rescan started, it can take several minutes", { autoHideDuration: 3000 });
-        rescanStatusCheck(rescan_response, notifications.show, reloadCallback, setLoader, setContent);
+        rescanStatusCheck(rescan_response, notifications.show, reloadCallbackAction, setLoader, setContent);
       }).catch((error) => { console.log("Error, failed to rescan report: " + error); });
     },
-    [reloadCallback, notifications],
+    [reloadCallbackAction, notifications],
   );
   const handleOutputClose = () => { setOpenOutput(false); };
 
@@ -218,18 +218,18 @@ export function RescanRepo({ reloadCallback }: { reloadCallback: () => void }) {
         <IconButton type="button" aria-label="output" onClick={() => { setOpenOutput(true); }}>
           <TerminalIcon />
         </IconButton>
-        <RescanOutput isOpen={openOutput} handleClose={handleOutputClose} content={content} />
+        <RescanOutput isOpen={openOutput} handleCloseAction={handleOutputClose} content={content} />
       </div>
     </Tooltip>
   )
 }
 
 // Component reloading data from file and refreshing the UI
-export function ReloadRepoData({ reloadCallback }: { reloadCallback: () => void }) {
+export function ReloadRepoData({ reloadCallbackAction }: { reloadCallbackAction: () => void }) {
   return (
     <Tooltip title="Reload the repository data" enterDelay={1000}>
       <div>
-        <IconButton type="button" aria-label="reload" onClick={reloadCallback}>
+        <IconButton type="button" aria-label="reload" onClick={reloadCallbackAction}>
           <RefreshIcon />
         </IconButton>
       </div>
@@ -258,8 +258,8 @@ export default function ToolbarActions() {
 
   return (
     <Stack direction="row">
-      <ReloadRepoData reloadCallback={reload} />
-      <RescanRepo reloadCallback={reload} />
+      <ReloadRepoData reloadCallbackAction={reload} />
+      <RescanRepo reloadCallbackAction={reload} />
       <ModeSwitcher />
     </Stack>
   )

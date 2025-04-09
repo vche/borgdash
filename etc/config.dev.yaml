@@ -3,7 +3,7 @@ dashboard:
   rescan_timeout_ms: 300000
 
 reporter:
-  report_path: "/tmp/bordash.json"
+  report_path: "/tmp/borgdash_report.json"
   borg_path: "/opt/homebrew/bin/borg"
 
   # Base directory for relative paths specified in repos config's 'log_path'

@@ -1,28 +1,28 @@
-# FROM python:3
-FROM ubuntu:jammy
+FROM ghcr.io/prefix-dev/pixi:latest AS build
 
+# Add project files
+ADD pixi.toml /
+ADD dashboard /dashboard
+ADD reporter /reporter/
+ADD etc /etc
+
+# Set up environment
+ENV BORGDASH_CONFIG=/etc/config.yaml
+
+# Install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        borgbackup \
-        python3-pip \
-        && \
-        rm -rf /var/cache/apt /var/lib/apt/lists
-ADD borgweb /borgweb
-ADD setup.py /
-ADD setup.cfg /
-ADD etc/config.cfg /config/
-ENV BORGWEB_CONFIG /config/config.cfg
+  borgbackup \
+  && \
+  rm -rf /var/cache/apt /var/lib/apt/lists
 
-RUN pip3 install virtualenv
-RUN virtualenv /pyvenv
-
-# Install dependencies:
-WORKDIR /
-RUN /pyvenv/bin/pip install -e .
+# Install borgdash
+RUN pixi run build
 
 # Run the application:
-CMD ["/pyvenv/bin/borgweb"]
+# CMD ["/reporter/.pixi/envs/default/bin/borgdash-reporter"]
+# CMD ["/usr/local/bin/pixi", "run", "dashboard"]
+CMD ["pixi", "run", "dashboard"]
 
-VOLUME /config
-VOLUME /repos_backups
+VOLUME /etc
 VOLUME /repos_logs
-EXPOSE 5000
+EXPOSE 3000

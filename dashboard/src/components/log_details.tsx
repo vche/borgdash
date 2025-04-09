@@ -29,8 +29,8 @@ export default function LogDetails({ repo, logfile }: { repo: tBorgRepo, logfile
   const handleClose = () => { setLog(undefined); };
   return (
     <>
-      <LogDetailsFiles repo={repo} expanded={expanded} expand={setExpanded} openLog={handleOpen} />
-      <LogDetailsContent logfile={log} closeLog={handleClose} />
+      <LogDetailsFiles repo={repo} expanded={expanded} expandAction={setExpanded} openLogAction={handleOpen} />
+      <LogDetailsContent logfile={log} closeLogAction={handleClose} />
     </>
   )
 }
@@ -40,17 +40,17 @@ export async function readlog(filepath: string) {
   return await response.json()
 }
 
-export function LogDetailsContent({ logfile, closeLog }:
+export function LogDetailsContent({ logfile, closeLogAction }:
   {
     logfile: tBorgLog | undefined,
-    closeLog: () => void
+    closeLogAction: () => void
   }
 ) {
   const [content, setContent] = React.useState<string | undefined>(undefined);
 
   const handleClose = () => {
     setContent(undefined);
-    closeLog();
+    closeLogAction();
   };
 
   React.useEffect(() => {
@@ -93,18 +93,18 @@ export function LogDetailsContent({ logfile, closeLog }:
   );
 }
 
-export function LogDetailsFiles({ repo, expanded, expand, openLog }:
+export function LogDetailsFiles({ repo, expanded, expandAction, openLogAction }:
   {
     repo: tBorgRepo,
     expanded: string | false,
-    expand: React.Dispatch<React.SetStateAction<string | false>>,
-    openLog: (logfilepath: tBorgLog) => void
+    expandAction: React.Dispatch<React.SetStateAction<string | false>>,
+    openLogAction: (logfilepath: tBorgLog) => void
   }
 ) {
   const router = useRouter()
   // const [expanded, setExpanded] = React.useState<string | false>(false);
   const handleChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-    expand(isExpanded ? panel : false);
+    expandAction(isExpanded ? panel : false);
   };
 
   // Sort archives by time, newest first
@@ -145,7 +145,7 @@ export function LogDetailsFiles({ repo, expanded, expand, openLog }:
                 <Button
                   variant="contained"
                   size="small" fullWidth
-                  onClick={() => { console.log("gnou" + openLog); openLog(log) }}
+                  onClick={() => { openLogAction(log) }}
                 >
                   Show log content
                 </Button>

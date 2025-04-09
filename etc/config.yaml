@@ -1,22 +1,23 @@
 dashboard:
-  reporter_path: "/Users/viv/dev/borgdash/reporter/.pixi/envs/default/bin/borgdash-reporter"
+  reporter_path: "/reporter/.pixi/envs/default/bin/borgdash-reporter"
   rescan_timeout_ms: 300000
 
 reporter:
-  report_path: "/tmp/bordash.json"
-  borg_path: "/opt/homebrew/bin/borg"
+  report_path: "/etc/borgdash_report.json"
+  borg_path: "/usr/bin/borg"
 
   # Base directory for relative paths specified in repos config's 'log_path'
-  logs_basedir: "/Volumes/dwarfstorage/Backup/logs"
-  # repos_basedir: "/Volumes/dwarfstorage/Backup"
+  logs_basedir: "/repos_logs"
   repos_basedir: "ssh://viv@192.168.0.198/home/viv/dwarfdisk/Backup"
 
-  # Enable alarming on discord channel for failed backups
+  # Enable alarming on discord channel for failed backups 90/
   discord:
-    webhook: "1420474818:https://discord.com/api/webhooks/1127505560233333090/dGZjhM32M4Vd-Iy1B9H"
-    webhook_user: "Borg backup monitor"
-    message: "**{} Backups failed**:\n\n{}"
-    message_device: "- {}: Failed with status {} on {} at {}\n"
+    webhook: "https://discord.com/api/webhooks/1121501560833323091/dGZjhM35M6VheXTGJFFxeLjpkQpt6WLi7zfCgbUdVqIMeaPB4Sn8Y4w8PeqNI-Iy1F9H"
+    webhook_user: "Borg backup dashboard"
+    # First {}: backups count, second: list of message_bkup for each failed bkup
+    message: "**{} Backups failed**:\n\n{}\nSee [web dashboard](http://127.0.0.1:3000) for details"
+    # First {}: backup name, second: status, third: date/time
+    message_bkup: "- **{}**: Failed with status `{}` on {}\n"
 
 repos:
   # Repo  name

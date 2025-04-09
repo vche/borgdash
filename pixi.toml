@@ -4,14 +4,18 @@ version = "0.1.0"
 description = "Borg backup monitor"
 authors = ["Vivien Chene <viv@vivc.org>"]
 channels = ["conda-forge"]
-platforms = ["osx-arm64", 'linux-64']
+platforms = ["osx-arm64", 'linux-64', 'linux-aarch64']
 
 [tasks]
+build = { depends-on = ["reporter-build", "dashboard-build"] }
 reporter = { cmd = "pixi run withconfig", cwd = "reporter" }
-dashboard = { cmd = "pixi run dev", cwd = "dashboard" }
-# build { depends-on = ["reporter-build", "dashboard-build"] }
+dashboard = { cmd = "pixi run start", cwd = "dashboard" }
+dashboard-dev = { cmd = "pixi run dev", cwd = "dashboard" }
+dashboard-build = { cmd = "pixi run build", cwd = "dashboard" }
+reporter-build = { cmd = "pixi run build", cwd = "reporter" }
 # docker-multi = { cmd = "docker build --platform linux/amd64,linux/arm64 -t vche/borgdash:latest .", cwd = "." }
 # docker-push = { cmd = "docker push -t vche/borgdash:latest .", cwd = "." }
-# docker-build = { cmd = "docker build -t vche/borgdash:latest .", cwd = "." }
+docker-build = { cmd = "docker build -t vche/borgdash:latest .", cwd = "." }
+docker-run = { cmd = "docker run --name borgdash -p 3000:3000 vche/borgdash", cwd = "." }
 
 [dependencies]
