@@ -20,5 +20,6 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   const body = await request.json();
   await save_config(body.configdata);
+  await get_config(true);
   return new NextResponse();
 }

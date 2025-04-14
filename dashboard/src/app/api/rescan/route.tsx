@@ -4,7 +4,7 @@ import { rescan_is_running, rescan_get_status, rescan_start, rescan_stop } from 
 export async function PUT() {
   if (!rescan_is_running()) {
     console.log("Starting rescan process");
-    rescan_start();
+    await rescan_start();
   }
   else {
     console.log("process aleady running...");
@@ -22,7 +22,7 @@ export async function GET() {
 export async function DELETE() {
   if (rescan_is_running()) {
     console.log("Stopping rescan process");
-    rescan_stop();
+    await rescan_stop();
   }
   else {
     console.log("no process running...");

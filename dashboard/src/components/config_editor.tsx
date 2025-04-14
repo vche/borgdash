@@ -24,7 +24,7 @@ export default function ConfigEditor() {
   const onChange = React.useCallback((val: string) => { setValue(val); }, []);
   const onSave = React.useCallback(() => {
     saveconfig(value).then(() => {
-      notifications.show("Config saved, restart server to reload.", { autoHideDuration: 3000 });
+      notifications.show("Config saved and reloaded.", { autoHideDuration: 3000 });
     });
   }, [value, notifications]);
 
@@ -38,7 +38,7 @@ export default function ConfigEditor() {
 
   return (
     <>
-      <Button type="button" variant="contained" startIcon={<SaveIcon />} onClick={onSave}> Save</Button>
+      <Button type="button" variant="contained" startIcon={<SaveIcon />} onClick={onSave}>Save</Button>
       <CodeMirror
         value={value}
         theme={monokai}

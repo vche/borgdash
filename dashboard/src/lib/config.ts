@@ -55,7 +55,6 @@ const DEFAULT_CONFIG: tConfig = {
   },
   report: {}
 }
-export const config = await get_config();
 
 export async function get_config(force: boolean = false): Promise<tConfig> {
   const [config_data,] = await load_config(force);
@@ -104,7 +103,6 @@ export async function save_config(config?: string) {
   // Reload if there's no cache or a force reload is required
   try {
     const config_data = config ? config : YAML.stringify(config_cache);
-    console.log(`Saving config to ${CONFIG_PATH}`);
     await fs.writeFile(CONFIG_PATH, config_data);
     console.log(`Config file saved to ${CONFIG_PATH}`);
   } catch (error) {

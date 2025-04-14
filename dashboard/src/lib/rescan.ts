@@ -1,7 +1,5 @@
 import { ChildProcess, spawn } from "child_process";
-import { config } from "@/lib/config";
-const reporter_path = config.dashboard.reporter_path;
-const rescan_timeout_ms = config.dashboard.rescan_timeout_ms;
+import { get_config } from "@/lib/config";
 
 export type tRescanStatus = { status: "success" | "error" | "running" | null, stdout: string | null, stderr: string | null };
 
@@ -28,13 +26,14 @@ export function rescan_get_status() {
   return scan_status;
 }
 
-export function rescan_stop() {
+export async function rescan_stop() {
   console.log("process killed");
   rescanProcess?.kill();
 }
 
-export function rescan_start() {
-  rescanProcess = spawn(reporter_path, [], { timeout: rescan_timeout_ms });
+export async function rescan_start() {
+  const config = await get_config();
+  rescanProcess = spawn(config.dashboard.reporter_path, [], { timeout: config.dashboard.rescan_timeout_ms });
   rescanStdout = "";
   rescanStderr = "";
 
