@@ -18,7 +18,7 @@ class BorgReporter:
 
   def resolve_path(self, base_path: str, partial_path: str) -> str:
     """Appends basepath unless partial path is absolute."""
-    if partial_path.startswith('/') or partial_path.startswith('ssh://'):
+    if partial_path.startswith('/') or partial_path.startswith('ssh://')  or partial_path.startswith('sshfs://'):
       return partial_path
     if base_path and not base_path.endswith('/'):
       return f"{base_path}/{partial_path}"

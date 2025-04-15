@@ -31,12 +31,12 @@ can run backup: api/run/target
 - [x] add config module loaded from json env var
 - [x] add reporter discord notifications
 - [x] add report full path/ssh access info
-- [ ] add repo button to extract?
 - [x] create docker container
-- [ ] add ssh and keys/stuff
-- [ ] reload config file at startup
+- [x] add ssh and keys/stuff
+- [x] reload config file at startup
 - [ ] create cron or other configurable system for reporter
   - readme update
+- [ ] add extract feature?
 - [ ] per repo backup trigger
   - implement api for triggering commands
   - configure ssh remote trigger or stuff....
@@ -45,6 +45,13 @@ can run backup: api/run/target
 
 ## Installation
 docker
+
+Mount the ssh folder, not just the keys to retain known hosts
+No password!
+ssh-keygen
+ssh-keygen -t ed25519 -N '' -f borg_id_ed25519
+ssh-copy-id -i etc/borg_id_ed25519.pub -f viv@192.168.0.198
+docker exec -it borgdash  ssh -viv@192.168.0.198
 
 ## Development
 

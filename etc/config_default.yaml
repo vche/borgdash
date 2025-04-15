@@ -11,12 +11,14 @@ reporter:
   borg_path: "/usr/bin/borg"
 
   # Base directory for relative paths specified in repos config's 'log_path'.
+  # Can be an sshfs mount, requiring keys to be configured like for ssh remote repo
   # Prepended if the repo path is relative (doesn't start with /)
+  # repos_basedir: "sshfs://user@192.168.0.198/repos"
   logs_basedir: "/repos_logs"
   # Base directory for relative paths specified in repos config's `repo path`.
-  # Can be ssh url. If password is not specified, ssh agent must be configured to enable password less connection.
+  # Can be ssh url, but ssh keys must be authorized on hosts to enable password less connection.
   # Used if the repo path is relative (doesn't start with / or ssh://)
-  # repos_basedir: "ssh://user:pass@192.168.0.198/repos"
+  # repos_basedir: "ssh://user@192.168.0.198/repos"
   repos_basedir: "/repos"
 
   # Enable alarming on discord channel for failed backups 90/

@@ -113,7 +113,9 @@ function rescanStatusCheck(
   setLoader: React.Dispatch<React.SetStateAction<boolean>>,
   setContent: React.Dispatch<React.SetStateAction<string | null>>
 ) {
-  setContent(`--------- Standard output ---------\n${rescan_response.stdout}\n\n--------- Error output ---------\n${rescan_response.stderr}`);
+  const stdout = rescan_response.stdout ? rescan_response.stdout : "";
+  const stderr = rescan_response.stdout ? rescan_response.stdout : "";
+  setContent(`--------- Command output ---------\n${stdout}\n\n${stderr}`);
 
   if (rescan_response.status == "success") {
     setLoader(false);
@@ -206,21 +208,23 @@ export function RescanRepo({ reloadCallbackAction }: { reloadCallbackAction: () 
   const handleOutputClose = () => { setOpenOutput(false); };
 
   return (
-    <Tooltip title="Rescan the repositories (long operation)" enterDelay={1000}>
-      <div>
-        {loader ? (
-          <CircularProgress size={20} />
-        ) : (
+    <div>
+      {loader ? (
+        <CircularProgress size={20} />
+      ) : (
+        <Tooltip title="Rescan the repositories (long operation)" enterDelay={1000}>
           <IconButton type="button" aria-label="rescan" onClick={rescan}>
             <TroubleshootIcon />
           </IconButton>
-        )}
+        </Tooltip>
+      )}
+      <Tooltip title="Show repo scan command output" enterDelay={1000}>
         <IconButton type="button" aria-label="output" onClick={() => { setOpenOutput(true); }}>
           <TerminalIcon />
         </IconButton>
-        <RescanOutput isOpen={openOutput} handleCloseAction={handleOutputClose} content={content} />
-      </div>
-    </Tooltip>
+      </Tooltip>
+      <RescanOutput isOpen={openOutput} handleCloseAction={handleOutputClose} content={content} />
+    </div>
   )
 }
 

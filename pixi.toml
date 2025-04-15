@@ -27,6 +27,10 @@ docker-run = { cmd = [
   "3000:3000",
   "--mount",
   "type=bind,source=./etc/config_docker.yaml,target=/etc/config.yaml",
+  "--mount",
+  "type=bind,source=/Volumes/dwarfstorage/Backup/logs,target=/repos_logs",
+  "--mount",
+  "type=bind,source=./etc/ssh_docker,target=/root/.ssh",
   "-d",
   "vche/borgdash",
 ], cwd = "." }

@@ -11,7 +11,7 @@ ENV BORGDASH_CONFIG=/etc/config.yaml
 
 # Install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-  borgbackup \
+  borgbackup openssh-client sshfs \
   && \
   rm -rf /var/cache/apt /var/lib/apt/lists
 

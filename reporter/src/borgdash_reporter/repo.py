@@ -182,7 +182,10 @@ class BorgRepo:
           self.logs[borglog.filepath.name] = borglog
         else:
           # Log file has an archive that is not saved, remove it
-          borglog.filepath.unlink(missing_ok=True)
+          try:
+            borglog.filepath.unlink(missing_ok=True)
+          except OSError as e:
+            log.warning(f"Couldn't delete file {borglog.filepath}: {e}")
       else:
         # No archive name in the log file, most probably a failed backup, keep it for manual cleaning
         self.logs[borglog.filepath.name] = borglog
