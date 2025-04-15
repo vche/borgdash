@@ -1,13 +1,14 @@
 dashboard:
   reporter_path: "/reporter/.pixi/envs/default/bin/borgdash-reporter"
   rescan_timeout_ms: 300000
+  sshfs_mount_uptime_ms: 6000000
 
 reporter:
-  report_path: "/etc/borgdash_report.json"
+  report_path: "/data/report.json"
   borg_path: "/usr/bin/borg"
 
   # Base directory for relative paths in repos config's 'log_path'
-  logs_basedir: "/repos_logs"
+  logs_basedir: "sshfs://viv@192.168.0.198:/home/viv/dwarfdisk/Backup/logs/"
   repos_basedir: "ssh://viv@192.168.0.198/home/viv/dwarfdisk/Backup"
 
   # Enable alarming on discord channel for failed backups 90/

@@ -39,11 +39,11 @@ export async function rescan_start() {
 
   // add event listeners
   rescanProcess.stdout?.on("data", data => {
-    // console.log(`stdout: ${data}`);
+    console.log(`stdout: ${data}`);
     rescanStdout = rescanStdout.concat(data);
   });
   rescanProcess.stderr?.on("data", data => {
-    // console.log(`stderr: ${data}`);
+    console.log(`stderr: ${data}`);
     rescanStderr = rescanStderr.concat(data);
   });
   rescanProcess.on('error', (error) => { console.log(`error: ${error.message}`); });

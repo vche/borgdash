@@ -57,6 +57,7 @@ class DiscordNotifier(BorgNotifier):
     if self._cfg.discord_config:
       self._webhook_url, self._user, message, message_bkup = self._cfg.discord_config
       self._enabled = True
+      log.info(self._webhook_url)
       self._webhook = SyncWebhook.from_url(self._webhook_url)
       if message:
           self._message = message

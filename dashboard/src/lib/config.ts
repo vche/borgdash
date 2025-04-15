@@ -5,6 +5,7 @@ import { promises as fs } from "fs";
 export type tDashboardConfig = {
   reporter_path: string,
   rescan_timeout_ms: number,
+  sshfs_mount_uptime_ms: number,
 };
 
 export type tReporterConfig = {
@@ -46,6 +47,7 @@ const DEFAULT_CONFIG: tConfig = {
   dashboard: {
     reporter_path: "/Users/viv/dev/borgdash/reporter/.pixi/envs/default/bin/borgdash-reporter",
     rescan_timeout_ms: 300000,
+    sshfs_mount_uptime_ms: 600000,
   },
   reporter: {
     report_path: "/tmp/bordash.json",

@@ -34,8 +34,10 @@ can run backup: api/run/target
 - [x] create docker container
 - [x] add ssh and keys/stuff
 - [x] reload config file at startup
+- [x] add sshfs support
 - [ ] create cron or other configurable system for reporter
-  - readme update
+- [ ] readme update
+- [ ] config overrides defaults, so as to allow "light" config
 - [ ] add extract feature?
 - [ ] per repo backup trigger
   - implement api for triggering commands

@@ -2,8 +2,9 @@ import logging
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, Optional, Self, Tuple
+from typing import Any, Dict, List, Optional, Self, Tuple
 from .borg import BorgClient
+from .logfs import logfs_from_path
 
 log = logging.getLogger(__name__)
 
@@ -156,7 +157,7 @@ class BorgRepo:
     # repo config
     self.name = name
     self.repopath = path
-    self.logspath = Path(logs) if logs else None
+    self.logspath = logfs_from_path(logs)
     self.pwd = pwd
     self.cmd = cmd
     self.borg = BorgClient(borg_path, self.repopath, self.pwd)
@@ -172,31 +173,35 @@ class BorgRepo:
     log.info(f"Scanning logs: {self.logspath}")
     self.logs = {}
     last_log = None
-    for logfile in self.get_logs_list():
-      borglog = BorgLog(logfile)
-      if borglog.archive_name:
-        archive = self.archives.get(borglog.archive_name)
-        if archive:
-          # Found the matching archive, link it to the log file
-          archive.log = borglog
-          self.logs[borglog.filepath.name] = borglog
+    if self.logspath and len(self.archives) > 0:
+      for logfile in self.logspath.get_logs_list():
+        borglog = BorgLog(logfile)
+        if borglog.archive_name:
+          archive = self.archives.get(borglog.archive_name)
+          if archive:
+            # Found the matching archive, link it to the log file
+            archive.log = borglog
+            self.logs[borglog.filepath.name] = borglog
+          else:
+            # Log file has an archive that is not saved, remove it
+            try:
+              log.warning(f"Archive {borglog.archive_name} for logfile {borglog.filepath} not found, deleting log")
+              self.logspath.delete(borglog.filepath)
+            except OSError as e:
+              log.warning(f"Couldn't delete file {borglog.filepath}: {e}")
         else:
-          # Log file has an archive that is not saved, remove it
-          try:
-            borglog.filepath.unlink(missing_ok=True)
-          except OSError as e:
-            log.warning(f"Couldn't delete file {borglog.filepath}: {e}")
-      else:
-        # No archive name in the log file, most probably a failed backup, keep it for manual cleaning
-        self.logs[borglog.filepath.name] = borglog
+          # No archive name in the log file, most probably a failed backup, keep it for manual cleaning
+          self.logs[borglog.filepath.name] = borglog
 
-      # If we have a date time, save the most recent run
-      if borglog.date_time and (not last_log or borglog.date_time > last_log.date_time):  # type: ignore
-        last_log = borglog
+        # If we have a date time, save the most recent run
+        if borglog.date_time and (not last_log or borglog.date_time > last_log.date_time):  # type: ignore
+          last_log = borglog
     self.last_run = last_log
 
   def scan(self):
     log.info(f"Scanning repo {self.name}, path: {self.repopath}")
+    if self.logspath:
+      self.logspath.mount()
 
     # Get repo info from borg
     info = self.borg.info()
@@ -221,13 +226,8 @@ class BorgRepo:
             last_backup = backup
       self.last_backup = last_backup
 
-  def get_logs_list(self) -> Iterator[Path]:
-    try:
-      return self.logspath.iterdir() if self.logspath else iter([])
-    except OSError as e:
-      log.error(f"Unable to read logs: {e}")
-      return iter([])
-
+    if self.logspath:
+      self.logspath.umount()
 
   def status(self) -> Optional[bool]:
     if self.last_run:

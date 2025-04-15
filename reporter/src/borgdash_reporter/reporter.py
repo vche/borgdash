@@ -7,6 +7,7 @@ from .config import Config
 from .notifier import get_notifier
 from .exceptions import RepoError
 from .repo import BorgRepo
+from .logfs import resolve_path
 
 log = logging.getLogger(__name__)
 
@@ -15,15 +16,6 @@ class BorgReporter:
     self._cfg = config
     self._repos = []
     self._notifier = get_notifier(config)
-
-  def resolve_path(self, base_path: str, partial_path: str) -> str:
-    """Appends basepath unless partial path is absolute."""
-    if partial_path.startswith('/') or partial_path.startswith('ssh://')  or partial_path.startswith('sshfs://'):
-      return partial_path
-    if base_path and not base_path.endswith('/'):
-      return f"{base_path}/{partial_path}"
-    else:
-      return f"{base_path}{partial_path}"
 
   def to_dict(self) -> Dict[str, Any]:
     return {
@@ -58,8 +50,8 @@ class BorgReporter:
       logpath = repo_config.get(self._cfg.CONFIG_KEY_LOG_PATH)
       return {
         "borg_path": self._cfg.borg_path,
-        "path": self.resolve_path(self._cfg.repos_basedir, repo_config[self._cfg.CONFIG_KEY_REPO_PATH]),
-        "logs": self.resolve_path(self._cfg.logs_basedir, logpath) if logpath else None,
+        "path": resolve_path(self._cfg.repos_basedir, repo_config[self._cfg.CONFIG_KEY_REPO_PATH]),
+        "logs": resolve_path(self._cfg.logs_basedir, logpath) if logpath else None,
         "pwd": repo_config.get(self._cfg.CONFIG_KEY_REPO_PWD),
         "cmd": repo_config.get(self._cfg.CONFIG_KEY_SCRIPT),
       }

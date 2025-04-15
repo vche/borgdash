@@ -20,6 +20,12 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
+export async function readlog(repo: tBorgRepo, logfile: tBorgLog) {
+  const json_body = { 'filepath': logfile.fullpath, 'filename': logfile.name, 'repologpath': repo.logspath }
+  const response = await fetch("/api/readlog", { method: "post", body: JSON.stringify(json_body) });
+  return await response.json()
+}
+
 export default function LogDetails({ repo, logfile }: { repo: tBorgRepo, logfile?: string }) {
   // Default backup expanded is the one specified, or the last one, or none
   const default_log = logfile ?? repo?.last_run?.name ?? false;
@@ -30,18 +36,14 @@ export default function LogDetails({ repo, logfile }: { repo: tBorgRepo, logfile
   return (
     <>
       <LogDetailsFiles repo={repo} expanded={expanded} expandAction={setExpanded} openLogAction={handleOpen} />
-      <LogDetailsContent logfile={log} closeLogAction={handleClose} />
+      <LogDetailsContent repo={repo} logfile={log} closeLogAction={handleClose} />
     </>
   )
 }
 
-export async function readlog(filepath: string) {
-  const response = await fetch("/api/readlog", { method: "post", body: JSON.stringify({ 'filepath': filepath }) });
-  return await response.json()
-}
-
-export function LogDetailsContent({ logfile, closeLogAction }:
+export function LogDetailsContent({ repo, logfile, closeLogAction }:
   {
+    repo: tBorgRepo,
     logfile: tBorgLog | undefined,
     closeLogAction: () => void
   }
@@ -55,13 +57,13 @@ export function LogDetailsContent({ logfile, closeLogAction }:
 
   React.useEffect(() => {
     if (logfile) {
-      readlog(logfile?.fullpath).then((data) => {
+      readlog(repo, logfile).then((data) => {
         setContent(data.filecontent);
       }).catch((error) => {
         console.log(error);
       });
     }
-  }, [logfile]);
+  }, [logfile, repo]);
 
   return (
     <Dialog

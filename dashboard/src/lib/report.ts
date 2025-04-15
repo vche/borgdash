@@ -1,6 +1,7 @@
 // This module is server side only and cannot be used client side as it's reading files from filesystem
 import { promises as fs } from "fs";
 import { get_config } from "@/lib/config";
+import { getlocapath } from "@/lib/logfs";
 
 export type tBorgSize = {
   osize: number;
@@ -55,6 +56,14 @@ export async function load_report_data(force: boolean = false) {
   return report_cache;
 }
 
-export async function load_logfile(logfilepath: string) {
-  return await fs.readFile(logfilepath, "utf8");
+export async function load_logfile(logname: string, logfilepath: string, repologpath: string) {
+  try {
+    const fullpath = await getlocapath(logname, logfilepath, repologpath);
+    return await fs.readFile(fullpath, "utf8");
+  } catch (error) {
+    const errorstr = `Error reading logfile at ${logfilepath}:\n ${error}`;
+    console.log(errorstr);
+    return errorstr;
+  }
+
 }

@@ -308,7 +308,7 @@ packages:
 - pypi: .
   name: borgdash-reporter
   version: 1.0.1
-  sha256: 1ee385a6b75552d72387dd57bcd0655575a5ef27c7477153a5365cbce6111850
+  sha256: 538350712421513a31f79006ad8bd93cd594a715bcdfe64bc7dd108e56d145c5
   requires_dist:
   - pyaml
   - discord-py

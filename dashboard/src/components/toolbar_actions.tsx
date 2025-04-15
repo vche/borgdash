@@ -114,7 +114,7 @@ function rescanStatusCheck(
   setContent: React.Dispatch<React.SetStateAction<string | null>>
 ) {
   const stdout = rescan_response.stdout ? rescan_response.stdout : "";
-  const stderr = rescan_response.stdout ? rescan_response.stdout : "";
+  const stderr = rescan_response.stderr ? rescan_response.stderr : "";
   setContent(`--------- Command output ---------\n${stdout}\n\n${stderr}`);
 
   if (rescan_response.status == "success") {
@@ -128,7 +128,7 @@ function rescanStatusCheck(
   }
   else if (rescan_response.status == "running") {
     const timeoutId = setTimeout(() => {
-      console.log('Delayed message after 2 seconds!');
+      console.log('Delayed message after 3 seconds!');
       rescan_reports().then((rescan_response) => {
         rescanStatusCheck(rescan_response, notify, reloadCallback, setLoader, setContent);
       });
