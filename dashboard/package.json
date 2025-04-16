@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@codemirror/lang-yaml": "^6.1.2",
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
@@ -22,10 +23,12 @@
     "@uiw/codemirror-extensions-color": "^4.23.10",
     "@uiw/codemirror-theme-monokai": "^4.23.10",
     "@uiw/react-codemirror": "^4.23.10",
+    "antd": "^5.24.7",
     "next": "^15.2.4",
     "pretty-bytes": "^6.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-js-cron": "^5.0.1",
     "yaml": "^2.7.0"
   },
   "devDependencies": {

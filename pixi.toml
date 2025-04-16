@@ -17,7 +17,6 @@ reporter-build = { cmd = "pixi run build", cwd = "reporter" }
 # docker-push = { cmd = "docker push -t vche/borgdash:latest .", cwd = "." }
 docker-clean = { cmd = "docker stop borgdash; docker rm borgdash ", cwd = "." }
 docker-build = { cmd = "docker build -t vche/borgdash:latest .", cwd = "." }
-# docker-run = { cmd = "docker run --name borgdash -p 3000:3000 --mount type=bind,source=./etc/config_docker.yaml,target=/etc/config.yaml -d vche/borgdash", cwd = "." }
 docker-run = { cmd = [
   "docker",
   "run",

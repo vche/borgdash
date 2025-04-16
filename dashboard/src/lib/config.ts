@@ -11,6 +11,7 @@ export type tDashboardConfig = {
 export type tReporterConfig = {
   report_path: string,
   borg_path: string,
+  crontab_path: string,
   logs_basedir: string,
   repos_basedir: string,
   discord?: {
@@ -52,6 +53,7 @@ const DEFAULT_CONFIG: tConfig = {
   reporter: {
     report_path: "/tmp/bordash.json",
     borg_path: "/usr/bin/borg",
+    crontab_path: "/tmp/crontab",
     logs_basedir: "/logs",
     repos_basedir: "/repos",
   },
@@ -108,6 +110,6 @@ export async function save_config(config?: string) {
     await fs.writeFile(CONFIG_PATH, config_data);
     console.log(`Config file saved to ${CONFIG_PATH}`);
   } catch (error) {
-    console.log(`Error loading file ${CONFIG_PATH}: ${error}`);
+    console.log(`Error saving file ${CONFIG_PATH}: ${error}`);
   }
 }

@@ -17,6 +17,7 @@ import type { tBorgReport } from "@/lib/report";
 import { NextAppProvider } from "@toolpad/core/nextjs";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import ToolbarActions from "@/components/toolbar_actions";
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
 
 export type tReportContextData = [tBorgReport, React.Dispatch<tBorgReport>?];
 export type tReportContext = React.Context<tReportContextData>;
@@ -50,6 +51,11 @@ const BORGDASH_NAVIGATION: Navigation = [
     segment: "reporterconfig",
     title: "Reporter Configuration",
     icon: <SettingsIcon />,
+  },
+  {
+    segment: "crontab",
+    title: "Scheduler Configuration",
+    icon: <PendingActionsIcon />,
   },
 ];
 

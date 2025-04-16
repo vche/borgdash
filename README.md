@@ -35,7 +35,8 @@ can run backup: api/run/target
 - [x] add ssh and keys/stuff
 - [x] reload config file at startup
 - [x] add sshfs support
-- [ ] create cron or other configurable system for reporter
+- [x] create cron or other configurable system for reporter
+- [ ] add backup size in repo card in dashboard
 - [ ] readme update
 - [ ] config overrides defaults, so as to allow "light" config
 - [ ] add extract feature?
