@@ -244,21 +244,29 @@ export function ReloadRepoData({ reloadCallbackAction }: { reloadCallbackAction:
 export default function ToolbarActions() {
   const notifications = useNotifications();
   const [, set_report_data] = React.useContext(ReportContext);
+
   const reload = React.useCallback(
-    () => {
+    (event?: React.MouseEvent<HTMLElement>, no_notify?: boolean) => {
       reload_reports().then((report_response) => {
         if (set_report_data) {
           set_report_data(report_response.reportdata);
-          notifications.show("Report data reloaded", { autoHideDuration: 3000 });
+          if (!no_notify == true) { notifications.show("Report data reloaded", { autoHideDuration: 3000 }); }
         }
         else { console.log("Error, report data context is not set"); }
       }).catch((error) => {
         console.log(`Error, failed to reload report: ${error}`);
-        notifications.show(`Error, failed to reload report: ${error}`, { severity: "error", autoHideDuration: 3000 });
+        if (!no_notify == true) {
+          notifications.show(`Error, failed to reload report: ${error}`, { severity: "error", autoHideDuration: 3000 });
+        }
       });
     },
     [set_report_data, notifications],
   );
+
+  // Load at startup
+  React.useEffect(() => {
+    reload(undefined, true);
+  }, [reload]);
 
   return (
     <Stack direction="row">

@@ -17,6 +17,7 @@ import TableRow from '@mui/material/TableRow';
 import { useRouter } from 'next/navigation'
 import { get_status_color } from "@/components/reporter"
 import { datetime_iso_to_short } from "@/lib/utils";
+import prettyBytes from "pretty-bytes";
 
 export default function RepoCard({ repo }: { repo: tBorgRepo }) {
   const router = useRouter()
@@ -48,6 +49,13 @@ export default function RepoCard({ repo }: { repo: tBorgRepo }) {
                   <TableCell component="th" scope="row"> Last backup</TableCell>
                   <TableCell align="right">
                     {repo.last_backup ? `${datetime_iso_to_short(repo.last_backup.datetime)}` : "-"}
+                  </TableCell>
+                </TableRow>
+
+                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
+                  <TableCell component="th" scope="row"> Total/Compressed size</TableCell>
+                  <TableCell align="right">
+                    {`${prettyBytes(repo.sizes.osize)}/${prettyBytes(repo.sizes.csize)}`}
                   </TableCell>
                 </TableRow>
 

@@ -36,15 +36,20 @@ can run backup: api/run/target
 - [x] reload config file at startup
 - [x] add sshfs support
 - [x] create cron or other configurable system for reporter
-- [ ] add backup size in repo card in dashboard
-- [ ] readme update
+- [x] add backup size in repo card in dashboard
 - [ ] config overrides defaults, so as to allow "light" config
+- [x] reload reports after page load
+- [ ] add loader while loading logs
 - [ ] add extract feature?
+  - extract locally
+  - then upload
+  - results in output ?
 - [ ] per repo backup trigger
   - implement api for triggering commands
   - configure ssh remote trigger or stuff....
   - button in reach repo to start a backup
   - with output in window like for rescan
+- [ ] readme update
 
 ## Installation
 docker

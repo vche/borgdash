@@ -12,7 +12,7 @@ dev = { cmd = "export BORGDASH_CONFIG=../etc/config_dev.yaml && npm run dev", de
 ], cwd = "./" }
 install = { cmd = "npm install", cwd = "./" }
 build = { cmd = "npm run build", depends-on = ["install"], cwd = "./" }
-build-dev = { cmd = "export BORGDASH_CONFIG=../etc/config_dev.yaml && npm run build", cwd = "./" }
+start-dev = { cmd = "export BORGDASH_CONFIG=../etc/config_dev.yaml && npm run start", cwd = "./" }
 start = { cmd = "npm run start", cwd = "./" }
 
 [dependencies]
