@@ -19,12 +19,12 @@ reporter:
   # Base directory for relative paths specified in repos config's 'log_path'.
   # Can be an sshfs mount, requiring keys to be configured like for ssh remote repo
   # Prepended if the repo path is relative (doesn't start with /)
-  # repos_basedir: "sshfs://user@192.168.0.198/repos"
+  # repos_basedir: "sshfs://user@192.168.0.10:/repos"
   logs_basedir: "/repos_logs"
   # Base directory for relative paths specified in repos config's `repo path`.
   # Can be ssh url, but ssh keys must be authorized on hosts to enable password less connection.
   # Used if the repo path is relative (doesn't start with / or ssh://)
-  # repos_basedir: "ssh://user@192.168.0.198/repos"
+  # repos_basedir: "ssh://user@192.168.0.10/repos"
   repos_basedir: "/repos"
 
   # Enable alarming on discord channel for failed backups 90/
@@ -38,11 +38,13 @@ reporter:
 # repos:
 #   # Repo  name
 #   "repo_test":
-#     # Repo absolute path or relative to repos_basedir
+#     # Repo absolute path or relative to repos_basedir, this is where the borg archives for this repo will be
+#     # searched for
 #     "repo_path": "/repo_test"
-#     # Optional repo logs absolute path, or relative to the main logs_basedir
+#     # Optional repo logs absolute path, or relative to the main logs_basedir. If logs are there, they're expected
+#     # to contain the borg command(s) output for the archive creation
 #     "log_path": "/repo_test_logs"
-#     # Repo password. TODO: obfuscate
+#     # Repo password if any
 #     "repo_pwd": "backup"
 #     # Optional: Command/script to run to manually start a backup.
 #     "script": "script"
