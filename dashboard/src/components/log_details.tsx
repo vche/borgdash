@@ -19,6 +19,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { Backdrop, CircularProgress } from '@mui/material';
 
 export async function readlog(repo: tBorgRepo, logfile: tBorgLog) {
   const json_body = { 'filepath': logfile.fullpath, 'filename': logfile.name, 'repologpath': repo.logspath }
@@ -30,22 +31,27 @@ export default function LogDetails({ repo, logfile }: { repo: tBorgRepo, logfile
   // Default backup expanded is the one specified, or the last one, or none
   const default_log = logfile ?? repo?.last_run?.name ?? false;
   const [expanded, setExpanded] = React.useState<string | false>(default_log);
+  const [loading, setLoading] = React.useState(false);
   const [log, setLog] = React.useState<tBorgLog | undefined>(undefined);
   const handleOpen = (logfile: tBorgLog) => { setLog(logfile); };
   const handleClose = () => { setLog(undefined); };
   return (
     <>
       <LogDetailsFiles repo={repo} expanded={expanded} expandAction={setExpanded} openLogAction={handleOpen} />
-      <LogDetailsContent repo={repo} logfile={log} closeLogAction={handleClose} />
+      <LogDetailsContent repo={repo} logfile={log} closeLogAction={handleClose} setLoadingAction={setLoading} />
+      <Backdrop open={loading} >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </>
   )
 }
 
-export function LogDetailsContent({ repo, logfile, closeLogAction }:
+export function LogDetailsContent({ repo, logfile, closeLogAction, setLoadingAction }:
   {
     repo: tBorgRepo,
     logfile: tBorgLog | undefined,
-    closeLogAction: () => void
+    closeLogAction: () => void,
+    setLoadingAction: React.Dispatch<React.SetStateAction<boolean>>
   }
 ) {
   const [content, setContent] = React.useState<string | undefined>(undefined);
@@ -57,13 +63,15 @@ export function LogDetailsContent({ repo, logfile, closeLogAction }:
 
   React.useEffect(() => {
     if (logfile) {
+      setLoadingAction(true);
       readlog(repo, logfile).then((data) => {
+        setLoadingAction(false);
         setContent(data.filecontent);
       }).catch((error) => {
         console.log(error);
       });
     }
-  }, [logfile, repo]);
+  }, [logfile, repo, setLoadingAction]);
 
   return (
     <Dialog

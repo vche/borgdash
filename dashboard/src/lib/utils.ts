@@ -6,3 +6,7 @@ export function datetime_iso_to_short(datetime?: string | null) {
     + `${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes() + 1).padStart(2, '0')}:${dt.getSeconds()} `
   );
 }
+
+export const sleep = async (waitTime: number) =>
+  new Promise(resolve =>
+    setTimeout(resolve, waitTime));

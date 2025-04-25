@@ -170,12 +170,12 @@ Pre requisites:
 
 ### TODO
 - [x] readme update
-- [ ] config overrides defaults, so as to allow "light" config
-- [ ] add loader while loading logs
-- [ ] persisent notification dedupe
-- [ ] remove personal dev/docker config from repo
+- [x] add loader while loading logs
 - [ ] dashboard bar graph with size per repo
 - [ ] per repo graph with lines of size per archive
+- [ ] persistent notification dedupe
+- [ ] config overrides defaults, so as to allow "light" config
+- [ ] remove personal dev/docker config from repo
 - [ ] add extract feature?
   - extract locally
   - then upload

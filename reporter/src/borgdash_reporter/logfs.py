@@ -1,8 +1,7 @@
 import logging
-import os
 import subprocess
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, Optional, Self, Tuple
+from typing import Iterator, Optional
 from tempfile import TemporaryDirectory
 
 log = logging.getLogger(__name__)
