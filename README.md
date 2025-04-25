@@ -171,11 +171,13 @@ Pre requisites:
 ### TODO
 - [x] readme update
 - [x] add loader while loading logs
-- [ ] dashboard bar graph with size per repo
+- [ ] dashboard bar graph with time since last backup per repo
 - [ ] per repo graph with lines of size per archive
 - [ ] persistent notification dedupe
 - [ ] config overrides defaults, so as to allow "light" config
 - [ ] remove personal dev/docker config from repo
+- [ ] add screenshots
+- [ ] publish docker and repo public
 - [ ] add extract feature?
   - extract locally
   - then upload

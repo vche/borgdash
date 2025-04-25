@@ -65,7 +65,7 @@ class DiscordNotifier(BorgNotifier):
           self._message_bkup = message_bkup
 
   def _send_message(self, message: str):
-      self._webhook.send(message, username=self._user or "")
+    self._webhook.send(message, username=self._user or "")
 
 
 NOTIFIERS_CLASSES = [

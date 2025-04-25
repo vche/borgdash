@@ -64,7 +64,7 @@ class BorgReporter:
         self.from_dict(json.load(f))
 
       for repo in self._repos:
-        if repo.status:
+        if repo.status():
           self._notifier.addWarning(repo)
       self._notifier.notify()
 
@@ -82,7 +82,7 @@ class BorgReporter:
         repo = BorgRepo(repo, **self.repo_config_dict(repo_config))
         repo.scan()
         self._repos.append(repo)
-        if not repo.status:
+        if not repo.status():
             self._notifier.addWarning(repo)
       except RepoError as e:
         log.error(f"Unable to scan repo {repo}: {e}")
