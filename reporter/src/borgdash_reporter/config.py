@@ -7,6 +7,7 @@ class Config(object):
   DEFAULT_CONFIG="config.yaml"
   DEFAULT_REPORT_PATH = "/tmp/bordash.json"
   DEFAULT_BORG_PATH = "/usr/bin/borg"
+  DEFAULT_DEDUPE_PATH = "/tmp/borgdash_dedupe.json"
   DEFAULT_LOGS_BASEDIR = "/logs"
   DEFAULT_REPOS_BASEDIR = "/repos"
   DEFAULT_ALARM_MESSAGE = "**{} Backups failed**:\n\n{}"
@@ -15,6 +16,7 @@ class Config(object):
   CONFIG_KEY_REPORTER = "reporter"
   CONFIG_KEY_REPORT_PATH = "report_path"
   CONFIG_KEY_BORG_PATH = "borg_path"
+  CONFIG_KEY_DEDUPE_PATH = "dedupe_path"
   CONFIG_KEY_LOGS_BASEDIR = "logs_basedir"
   CONFIG_KEY_REPOS_BASEDIR = "repos_basedir"
   CONFIG_KEY_DISCORD = "discord"
@@ -60,6 +62,10 @@ class Config(object):
   @property
   def repos_basedir(self) -> str:
     return self._config[self.CONFIG_KEY_REPORTER].get(self.CONFIG_KEY_REPOS_BASEDIR, self.DEFAULT_REPOS_BASEDIR)
+
+  @property
+  def dedupe_path(self) -> str:
+    return self._config[self.CONFIG_KEY_REPORTER].get(self.CONFIG_KEY_DEDUPE_PATH, self.DEFAULT_DEDUPE_PATH)
 
   @property
   def discord_config(self) -> Optional[Tuple[str, Optional[str], str, str]]:

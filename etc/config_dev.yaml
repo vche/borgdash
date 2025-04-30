@@ -7,6 +7,7 @@ reporter:
   report_path: "/tmp/borgdash_report.json"
   borg_path: "/opt/homebrew/bin/borg"
   crontab_path: "/tmp/borgdash.cron"
+  dedupe_path: "/tmp/borgdash_dedupe.json"
 
   # Base directory for relative paths specified in repos config's 'log_path'.
   # logs_basedir: "/Volumes/dwarfstorage/Backup/logs"

@@ -7,6 +7,7 @@ reporter:
   report_path: "/data/report.json"
   borg_path: "/usr/bin/borg"
   crontab_path: "/data/borgdash.cron"
+  dedupe_path: "/data/borgdash_dedupe.json"
 
   # Base directory for relative paths in repos config's 'log_path'
   logs_basedir: "sshfs://viv@192.168.0.198:/home/viv/dwarfdisk/Backup/logs/"
