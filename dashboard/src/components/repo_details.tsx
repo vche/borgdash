@@ -20,6 +20,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import prettyBytes from "pretty-bytes";
+import { LineChart } from '@mui/x-charts/LineChart';
 
 export default function RepoDetails({
   repo,
@@ -35,6 +36,7 @@ export default function RepoDetails({
   );
   return (
     <>
+      <RepoGraph repo={repo} />
       <RepoDetailsInfo repo={repo} />
       <RepoDetailsArchives
         repo={repo}
@@ -42,6 +44,56 @@ export default function RepoDetails({
         expandAction={setExpanded}
       />
     </>
+  );
+}
+
+export function RepoGraph({ repo }: { repo: tBorgRepo }) {
+  const dataset = Object.values(repo.archives).map((adata) => (
+    {
+      date: adata.datetime ? new Date(adata.datetime) : null,
+      osize: adata.sizes.osize,
+      dsize: adata.sizes.dsize,
+      csize: adata.sizes.csize,
+    }
+  ));
+
+  return (
+    <Card variant="outlined" component={Paper} sx={{ mb: 2 }}>
+      <CardContent>
+
+        <LineChart
+          xAxis={[{ scaleType: 'time', dataKey: 'date' }]}
+          yAxis={[{
+            scaleType: 'linear',
+            valueFormatter: (sz, context) =>
+              context.location === 'tick' ? `${prettyBytes(sz)}` : `${sz}`
+          }]}
+          series={[
+            {
+              label: 'Original size',
+              dataKey: 'osize',
+              area: true,
+              valueFormatter: (sz: number | null) => (sz === null ? '' : `${prettyBytes(sz)}`),
+            },
+            {
+              label: 'Compressed size',
+              dataKey: 'csize',
+              area: true,
+              valueFormatter: (sz: number | null) => (sz === null ? '' : `${prettyBytes(sz)}`),
+            },
+            {
+              label: 'Dedupe size',
+              dataKey: 'dsize',
+              area: true,
+              valueFormatter: (sz: number | null) => (sz === null ? '' : `${prettyBytes(sz)}`),
+            },
+          ]}
+          height={200}
+          dataset={dataset}
+        />
+
+      </CardContent>
+    </Card>
   );
 }
 

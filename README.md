@@ -171,8 +171,9 @@ Pre requisites:
 ### TODO
 - [x] readme update
 - [x] add loader while loading logs
-- [ ] dashboard bar graph with time since last backup per repo
-- [ ] per repo graph with lines of size per archive
+- [x] dashboard bar graph with time since last backup per repo
+- [x] per repo graph with lines of size per archive
+- [ ] reduce repo detail info card, too spacy
 - [ ] persistent notification dedupe
 - [ ] config overrides defaults, so as to allow "light" config
 - [ ] remove personal dev/docker config from repo
