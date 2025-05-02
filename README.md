@@ -8,11 +8,11 @@ edit configuration and set a schedule for automatic scans...
 Notifications can be send (discord only for now) when a failed backup is detected.
 
 ## Screenshots
-![Main dashboard](https://github.com/vche/borgdash/blob/main/etc/screenshots/dashboard.png?raw=true)
-![Repo details](https://github.com/vche/borgdash/blob/main/etc/screenshots/repo_details.png?raw=true)
-![Log files](https://github.com/vche/borgdash/blob/main/etc/screenshots/logfiles.png?raw=true)
-![Config editor](https://github.com/vche/borgdash/blob/main/etc/screenshots/config_editor.png?raw=true)
-![Scheduler configuration]("https://github.com/vche/borgdash/blob/main/etc/screenshots/scheduler_editor.png?raw=true)
+![Main dashboard](https://github.com/vche/borgdash/blob/main/etc/screenshots/dashboard.png?raw=true "Main dashboard")
+![Repo details](https://github.com/vche/borgdash/blob/main/etc/screenshots/repo_details.png?raw=true "Repo details")
+![Log files](https://github.com/vche/borgdash/blob/main/etc/screenshots/logfiles.png?raw=true "Log files")
+![Config editor](https://github.com/vche/borgdash/blob/main/etc/screenshots/config_editor.png?raw=true "Config editor")
+![Scheduler configuration]("https://github.com/vche/borgdash/blob/main/etc/screenshots/scheduler_editor.png?raw=true "Scheduler configuration")
 
 <!-- ![Alt text](/relative/path/to/img.jpg?raw=true "Optional Title") -->
 
