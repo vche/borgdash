@@ -8,11 +8,14 @@ edit configuration and set a schedule for automatic scans...
 Notifications can be send (discord only for now) when a failed backup is detected.
 
 ## Screenshots
-![Main dashboard]("")
-![Repo details]("")
-![Log content]("")
-![Config editor]("")
-![Scheduler configuration]("")
+![Main dashboard](https://github.com/vche/borgdash/blob/main/etc/screenshots/dashboard.png?raw=true)
+![Repo details](https://github.com/vche/borgdash/blob/main/etc/screenshots/repo_details.png?raw=true)
+![Log files](https://github.com/vche/borgdash/blob/main/etc/screenshots/logfiles.png?raw=true)
+![Config editor](https://github.com/vche/borgdash/blob/main/etc/screenshots/config_editor.png?raw=true)
+![Scheduler configuration]("https://github.com/vche/borgdash/blob/main/etc/screenshots/scheduler_editor.png?raw=true)
+
+<!-- ![Alt text](/relative/path/to/img.jpg?raw=true "Optional Title") -->
+
 
 ## Configuration
 
@@ -183,7 +186,7 @@ configure your repositories and/or discord webhook as needed.
 - [x] remove personal dev/docker config from repo
 - [x] add full info display from repo
 - [x] add full info display from archives
-- [ ] add screenshots
+- [x] add screenshots
 - [ ] publish docker and repo public
 - [ ] add extract feature?
   - extract locally

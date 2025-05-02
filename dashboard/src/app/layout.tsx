@@ -33,7 +33,6 @@ export default async function RootLayout({
           <React.Suspense fallback={<LinearProgress />}>
             <BorgdashLayout reportdata={report_data}>{children}</BorgdashLayout>
           </React.Suspense>
-          );
         </AppRouterCacheProvider>
       </body>
     </html>
