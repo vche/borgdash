@@ -31,6 +31,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-js-cron": "^5.0.1",
+    "ts-deepmerge": "^7.0.3",
     "yaml": "^2.7.0"
   },
   "devDependencies": {
