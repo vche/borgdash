@@ -1,0 +1,59 @@
+dashboard:
+  reporter_path: "/Users/viv/dev/borgdash/reporter/.pixi/envs/default/bin/borgdash-reporter"
+  rescan_timeout_ms: 300000
+  sshfs_mount_uptime_ms: 300000
+
+reporter:
+  report_path: "/tmp/borgdash_report.json"
+  borg_path: "/opt/homebrew/bin/borg"
+  crontab_path: "/tmp/borgdash.cron"
+  dedupe_path: "/tmp/borgdash_dedupe.json"
+
+  # Base directory for relative paths specified in repos config's 'log_path'.
+  # logs_basedir: "/Volumes/dwarfstorage/Backup/logs"
+  logs_basedir: "sshfs://viv@192.168.0.198:/home/viv/dwarfdisk/Backup/logs/"
+  # repos_basedir: "/Volumes/dwarfstorage/Backup"
+  repos_basedir: "ssh://viv@192.168.0.198/home/viv/dwarfdisk/Backup"
+
+  # Enable alarming on discord channel for failed backups
+  discord:
+    webhook: "https://discord.com/api/webhooks/1121501560833323090/dGZjhM35M6VheXTGJFFxeLjpkQpt6WLi7zfCgbUdVqIMeaPB4Sn8Y4w8PeqNI-Iy1F9H"
+    webhook_user: "Borg backup dashboard"
+    message: "**{} Backups failed**:\n\n{}"
+    message_device: "- {}: Failed with status `{}` on {}\n"
+
+repos:
+  # Repo  name
+  "dwarfserver":
+    # Repo absolute path
+    "repo_path": "dwarfserver"
+    # Repo logs absolute path, or relative to the main log_dir
+    # "log_path": "dwarfserver"
+    "log_path": "dwarfserver"
+    # Repo password TODO: obfuscate/env var
+    "repo_pwd": "backup"
+    # Command/script to run to manually start a backup.
+    "script": "script"
+
+  "mediadwarf":
+    "repo_path": "mediadwarf"
+    "log_path": "mediadwarf"
+    "repo_pwd": "backup"
+    "script": "script"
+
+  "domodwarf":
+    "repo_path": "domodwarf"
+    "log_path": "domodwarf"
+    "repo_pwd": "backup"
+    "script": "script"
+
+  "monidwarf":
+    "repo_path": "monidwarf"
+    "log_path": "monidwarf"
+    "repo_pwd": "backup"
+    "script": "script"
+
+  "dwarfnas":
+    "repo_path": "ssh://viv@192.168.0.198/srv/dev-disk-by-uuid-cfcc839a-b20f-4d7f-934a-16cb90e6dde0/Backup/dwarfnas/omvbackup/borgbackup"
+    "repo_pwd": "nasbackup"
+    "script": "script"

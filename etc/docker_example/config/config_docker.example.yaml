@@ -1,16 +1,6 @@
 dashboard:
-  # This needs to be updated to the git repo clone path
-  reporter_path: "./reporter/.pixi/envs/default/bin/borgdash-reporter"
-  rescan_timeout_ms: 300000
-  sshfs_mount_uptime_ms: 300000
 
 reporter:
-  # If not on osx with brew installation of borg, needs update
-  borg_path: "/opt/homebrew/bin/borg"
-  report_path: "/tmp/borgdash_report.json"
-  crontab_path: "/tmp/borgdash.cron"
-  dedupe_path: "/tmp/borgdash_dedupe.json"
-
   logs_basedir: "sshfs://user@192.168.0.1:/home/Backup/logs"
   repos_basedir: "ssh://user@192.168.0.1/home/Backup"
 

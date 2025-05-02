@@ -99,7 +99,9 @@ Reporter can either be started through a cron job, or left to be started on dema
 ### Docker
 
 #### Create config file
-See [configuration](#Configuration).
+See [configuration](#Configuration), you can copy the
+[example file](https://github.com/vche/borgdash/blob/main/etc/docker_example/config/config_docker.example.yaml)
+and just update the repo configuration and/or discord webhook.
 
 #### Create mounts
 The docker container requires at least the configuration file to be mapped to `/etc/config.yaml`.
@@ -167,22 +169,27 @@ Tech stack:
 Pre requisites:
 - Get the repository, e.g. `git clone https://github.com/vche/borgdash.git`
 - Install [Pixi](https://pixi.sh/latest/), which will install all other dependencies in virtual environments
+- Copy the [dev config example](https://github.com/vche/borgdash/blob/main/etc/config_dev.yaml) and
+configure your repositories and/or discord webhook as needed.
 
 ### TODO
 - [x] readme update
 - [x] add loader while loading logs
 - [x] dashboard bar graph with time since last backup per repo
 - [x] per repo graph with lines of size per archive
-- [ ] reduce repo detail info card, too spacy
+- [x] reduce repo detail info card, too spacy
 - [x] persistent notification dedupe
-- [ ] config overrides defaults, so as to allow "light" config
-- [ ] remove personal dev/docker config from repo
+- [x] config overrides defaults, so as to allow "light" config
+- [x] remove personal dev/docker config from repo
+- [x] add full info display from repo
+- [x] add full info display from archives
 - [ ] add screenshots
 - [ ] publish docker and repo public
 - [ ] add extract feature?
   - extract locally
   - then upload
   - results in output ?
+- [ ] per archive info fetcher in the console output
 - [ ] per repo backup trigger
   - implement api for triggering commands
   - configure ssh remote trigger or stuff....

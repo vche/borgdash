@@ -18,9 +18,13 @@ export type tBorgLog = {
 };
 export type tBorgArchive = {
   datetime: string | null;
+  datetime_end: string | null;
+  duration: number | null;
   log: tBorgLog;
   name: string;
+  comment?: string;
   sizes: tBorgSize;
+  nfiles: number;
 };
 export type tBorgRepo = {
   archives: { [k: string]: tBorgArchive };
@@ -32,6 +36,7 @@ export type tBorgRepo = {
   repopath: string;
   script: string;
   sizes: tBorgSize;
+  chunks: number;
   status: boolean | null;
 };
 export type tBorgReport = {

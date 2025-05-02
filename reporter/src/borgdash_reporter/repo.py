@@ -120,9 +120,17 @@ class BorgArchive:
     date_time: Optional[datetime] = None,
     sizes: Optional[BorgSize] = None,
     log: Optional[BorgLog] = None,
+    date_time_end: Optional[datetime] = None,
+    duration: Optional[int] = None,
+    comment: Optional[datetime] = None,
+    nfiles: int = 0,
   ) -> None:
     self.name = name
     self.date_time = date_time
+    self.date_time_end = date_time_end
+    self.comment = comment
+    self.duration = duration
+    self.nfiles = nfiles
     self.sizes = sizes
     self.log = log
 
@@ -130,6 +138,10 @@ class BorgArchive:
     return {
       "name": self.name,
       "datetime": self.date_time.isoformat() if self.date_time else None,
+      "datetime_end": self.date_time_end.isoformat() if self.date_time_end else None,
+      "duration": self.duration,
+      "comment": self.comment,
+      "nfiles": self.nfiles,
       "sizes": self.sizes.to_dict() if self.sizes else None,
       "log": self.log.to_dict() if self.log else None,
     }
@@ -141,6 +153,10 @@ class BorgArchive:
       datetime.fromisoformat(dict_data["datetime"]) if dict_data.get("datetime") else None,
       BorgSize.from_dict(dict_data["sizes"]) if dict_data.get("sizes") else None,
       BorgLog.from_dict(dict_data["log"]) if dict_data.get("log") else None,
+      datetime.fromisoformat(dict_data["datetime_end"]) if dict_data.get("datetime_end") else None,
+      int(dict_data["duration"]) if dict_data.get("duration") else None,
+      dict_data.get("comment"),
+      dict_data.get("nfiles", 0),
     )
 
 
@@ -164,6 +180,7 @@ class BorgRepo:
 
     # repo data
     self.sizes = BorgSize()
+    self.chunks = 0
     self.logs = {}
     self.archives = {}
     self.last_run = None
@@ -206,6 +223,7 @@ class BorgRepo:
     # Get repo info from borg
     info = self.borg.info()
     self.sizes = BorgSize.from_dict(info)
+    self.chunks = info.get("repo", {}).get("chunks", 0)
 
     # Get backup list
     borg_list = self.borg.list()
@@ -219,8 +237,12 @@ class BorgRepo:
     for backup in self.archives.values():
       log.info(f"Scanning archive: {backup.name}")
       archinfo = self.borg.info(archive=backup.name)
-      if archinfo:
-          backup.date_time = datetime.fromisoformat(archinfo["date"])
+      if archinfo and archinfo.get("archive"):
+          backup.date_time = datetime.fromisoformat(archinfo["archive"]["start"])
+          backup.date_time_end = datetime.fromisoformat(archinfo["archive"]["end"])
+          backup.duration = archinfo["archive"]["duration"]
+          backup.comment = archinfo["archive"]["comment"]
+          backup.nfiles = archinfo["archive"]["nfiles"]
           backup.sizes = BorgSize.from_dict(archinfo)
           if backup.date_time and (not last_backup or backup.date_time > last_backup.date_time):  # type: ignore
             last_backup = backup
@@ -239,6 +261,7 @@ class BorgRepo:
       "repopath": self.repopath,
       "logspath": str(self.logspath) if self.logspath else None,
       "sizes": self.sizes.to_dict(),
+      "chunks": str(self.chunks),
       "archives": { arch.name: arch.to_dict() for arch in self.archives.values() },
       "logfiles": { log.filepath.name: log.to_dict() for log in self.logs.values() },
       "script": self.cmd,
@@ -250,6 +273,7 @@ class BorgRepo:
   def from_dict(self, dict_data:Dict[str, Any]) -> None:
     try:
       self.sizes = BorgSize.from_dict(dict_data["sizes"])
+      self.chunks = dict_data.get("chunks", 0)
       self.archives = { name: BorgArchive.from_dict(arch) for name,arch in dict_data.get("archives", {}).items() }
       self.logs = { name: BorgLog.from_dict(logf) for name,logf in dict_data.get("logfiles", {}).items() }
       self.last_backup = BorgArchive.from_dict(dict_data["last_backup"]) if dict_data.get("last_backup") else None

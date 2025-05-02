@@ -3,7 +3,6 @@ import * as React from "react";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import type { tBorgArchive, tBorgSize, tBorgRepo } from "@/lib/report";
 import Paper from "@mui/material/Paper";
@@ -21,6 +20,9 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import prettyBytes from "pretty-bytes";
 import { LineChart } from '@mui/x-charts/LineChart';
+import Grid from "@mui/material/Grid2";
+import { CardHeader } from "@mui/material";
+
 
 export default function RepoDetails({
   repo,
@@ -35,15 +37,22 @@ export default function RepoDetails({
     default_backup,
   );
   return (
-    <>
-      <RepoGraph repo={repo} />
-      <RepoDetailsInfo repo={repo} />
-      <RepoDetailsArchives
-        repo={repo}
-        expanded={expanded}
-        expandAction={setExpanded}
-      />
-    </>
+    <Grid container spacing={2}>
+      <Grid size={12}>
+        <RepoGraph repo={repo} />
+      </Grid>
+      {/* <Grid item lg='12' textAlign={'center'} justifyContent={'center'}></Grid> */}
+      <Grid size={12}>
+        <RepoDetailsInfo repo={repo} />
+      </Grid>
+      <Grid size={12}>
+        <RepoDetailsArchives
+          repo={repo}
+          expanded={expanded}
+          expandAction={setExpanded}
+        />
+      </Grid>
+    </Grid>
   );
 }
 
@@ -59,8 +68,8 @@ export function RepoGraph({ repo }: { repo: tBorgRepo }) {
 
   return (
     <Card variant="outlined" component={Paper} sx={{ mb: 2 }}>
+      {/* <CardHeader title="Trends" /> */}
       <CardContent>
-
         <LineChart
           xAxis={[{ scaleType: 'time', dataKey: 'date' }]}
           yAxis={[{
@@ -82,7 +91,7 @@ export function RepoGraph({ repo }: { repo: tBorgRepo }) {
               valueFormatter: (sz: number | null) => (sz === null ? '' : `${prettyBytes(sz)}`),
             },
             {
-              label: 'Dedupe size',
+              label: 'Deduplicated size',
               dataKey: 'dsize',
               area: true,
               valueFormatter: (sz: number | null) => (sz === null ? '' : `${prettyBytes(sz)}`),
@@ -100,83 +109,62 @@ export function RepoGraph({ repo }: { repo: tBorgRepo }) {
 export function RepoDetailsInfo({ repo }: { repo: tBorgRepo }) {
   const router = useRouter();
   return (
-    <Card variant="outlined" component={Paper} sx={{ mb: 2 }}>
+    <Card variant="outlined" component={Paper} sx={{ mb: 0 }}>
+      <CardHeader title={`${repo.name}`} subheader={repo.repopath} />
       <CardContent>
-        <Typography
-          variant="h6"
-          component="div"
-          sx={{ mt: 0, mb: 2 }}
-          align="left"
-        >
-          Information
-        </Typography>
-        <Divider variant="middle" />
-        <ArchiveSize sizes={repo.sizes} />
 
-        <TableContainer>
-          <Table>
-            <TableBody>
-              <TableRow
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {" "}
-                  Last run
-                </TableCell>
-                <TableCell
-                  align="right"
-                  sx={{ color: get_status_color(repo.last_run?.status) }}
-                  onClick={() => {
-                    router.push(
-                      `/repos/${repo.name}/${repo.last_backup?.name}`,
-                    );
-                  }}
-                >
-                  {repo.last_run
-                    ? `${datetime_iso_to_short(repo.last_run.datetime)}`
-                    : "-"}
-                </TableCell>
-              </TableRow>
-              <TableRow
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {" "}
-                  Last backup
-                </TableCell>
-                <TableCell align="right">
-                  {repo.last_backup
-                    ? `${datetime_iso_to_short(repo.last_backup.datetime)}`
-                    : "-"}
-                </TableCell>
-              </TableRow>
-              <TableRow
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {" "}
-                  Path
-                </TableCell>
-                <TableCell align="right">{repo.repopath}</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Grid container spacing={2}>
+          <Grid size={6}>
+            <ArchiveSize sizes={repo.sizes} />
+          </Grid>
 
-        {repo.logspath && (
-          <Button
-            variant="contained"
-            size="small"
-            fullWidth
-            onClick={() => {
-              router.push(`/logs/${repo.name}`);
-            }}
-          >
-            Go to logs
-          </Button>
-        )}
+          <Grid size={6}>
+            <TableContainer>
+              <Table size="small">
+                <TableBody>
+                  <TableRow>
+                    <TableCell component="th" scope="row" align="left">Last run</TableCell>
+                    <TableCell
+                      align="right"
+                      sx={{ color: get_status_color(repo.last_run?.status) }}
+                      onClick={() => { router.push(`/repos/${repo.name}/${repo.last_backup?.name}`,); }}
+                    >
+                      {repo.last_run ? `${datetime_iso_to_short(repo.last_run.datetime)}` : "-"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell component="th" scope="row" align="left">Last backup</TableCell>
+                    <TableCell align="right">
+                      {repo.last_backup ? `${datetime_iso_to_short(repo.last_backup.datetime)}` : "-"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell component="th" scope="row" align="left">Total chunks</TableCell>
+                    <TableCell align="right"> {repo.chunks}</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
+          <Grid size={12} sx={{ mt: 1 }}>
+            {repo.logspath && (
+              <Button
+                variant="contained"
+                size="small"
+                fullWidth
+                onClick={() => {
+                  router.push(`/logs/${repo.name}`);
+                }}
+              >
+                Go to logs
+              </Button>
+            )}
+          </Grid>
+
+        </Grid>
+
       </CardContent>
-    </Card>
+    </Card >
   );
 }
 
@@ -207,16 +195,8 @@ export function RepoDetailsArchives({
 
   return (
     <Card variant="outlined" component={Paper} sx={{ my: 2 }}>
+      <CardHeader title="Archives" />
       <CardContent>
-        <Typography
-          variant="h6"
-          component="div"
-          sx={{ mt: 0, mb: 2 }}
-          align="left"
-        >
-          Archives
-        </Typography>
-
         {Object.entries(sortedDict).map(([name, archive]) => (
           <Accordion
             key={name}
@@ -236,7 +216,68 @@ export function RepoDetailsArchives({
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <ArchiveSize sizes={archive.sizes} />
+
+              <Grid container spacing={2}>
+                <Grid size={4}>
+                  <TableContainer>
+                    <Table size="small">
+                      <TableBody>
+                        <TableRow>
+                          <TableCell component="th" scope="row" align="left">Start</TableCell>
+                          <TableCell align="right">
+                            {archive.datetime ? `${datetime_iso_to_short(archive.datetime)}` : "-"}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell component="th" scope="row" align="left">End</TableCell>
+                          <TableCell align="right">
+                            {archive.datetime_end ? `${datetime_iso_to_short(archive.datetime_end)}` : "-"}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell component="th" scope="row" align="left">Backup time</TableCell>
+                          <TableCell align="right">
+                            {`${archive.duration}s`}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Grid>
+                <Grid size={4}>
+                  <ArchiveSize sizes={archive.sizes} />
+                </Grid>
+                <Grid size={4}>
+                  <TableContainer>
+                    <Table size="small">
+                      <TableBody>
+                        <TableRow>
+                          <TableCell component="th" scope="row" align="left">Files</TableCell>
+                          <TableCell align="right">{archive.nfiles}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell component="th" scope="row" align="left">Comment</TableCell>
+                          <TableCell align="right">{archive.comment}</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Grid>
+                <Grid size={12}>
+                  <TableContainer>
+                    <Table size="small">
+                      <TableBody>
+                        <TableRow>
+                          <TableCell component="th" scope="row" align="left">Location</TableCell>
+                          <TableCell align="right">{`${repo.repopath}::${archive.name}`}</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Grid>
+              </Grid>
+
+              {/* <ArchiveSize sizes={archive.sizes} /> */}
 
               {archive.log && (
                 <Button
@@ -261,22 +302,24 @@ export function RepoDetailsArchives({
 export function ArchiveSize({ sizes }: { sizes: tBorgSize }) {
   return (
     <TableContainer>
-      <Table>
+      <Table size="small">
         <TableBody>
-          <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-            <TableCell component="th" scope="row" align="left">
+          <TableRow >
+            <TableCell scope="row" component="th" align="left">
               Original size
             </TableCell>
-            <TableCell component="th" scope="row" align="center">
+            <TableCell align="right">{prettyBytes(sizes.osize)}</TableCell>
+          </TableRow>
+          <TableRow >
+            <TableCell scope="row" component="th" align="left">
               Compressed size
             </TableCell>
-            <TableCell component="th" scope="row" align="right">
-              Deduped size
-            </TableCell>
+            <TableCell align="right">{prettyBytes(sizes.csize)}</TableCell>
           </TableRow>
-          <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-            <TableCell align="left">{prettyBytes(sizes.osize)}</TableCell>
-            <TableCell align="center">{prettyBytes(sizes.csize)}</TableCell>
+          <TableRow >
+            <TableCell scope="row" component="th" align="left">
+              Deduplicated size
+            </TableCell>
             <TableCell align="right">{prettyBytes(sizes.dsize)}</TableCell>
           </TableRow>
         </TableBody>

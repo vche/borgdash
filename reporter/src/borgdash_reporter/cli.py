@@ -42,8 +42,8 @@ def main() -> None:
     # cfg.dump()
 
     reporter = BorgReporter(cfg)
-    # reporter.scan_repos()
-    reporter.load_repos()
+    reporter.scan_repos()
+    # reporter.load_repos()
 
     sys.exit(0)
   except ReporterError as e:

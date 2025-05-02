@@ -1,37 +1,20 @@
 dashboard:
-  reporter_path: "/reporter/.pixi/envs/default/bin/borgdash-reporter"
-  rescan_timeout_ms: 300000
-  sshfs_mount_uptime_ms: 6000000
 
 reporter:
-  report_path: "/data/report.json"
-  borg_path: "/usr/bin/borg"
-  crontab_path: "/data/borgdash.cron"
-  dedupe_path: "/data/borgdash_dedupe.json"
-
-  # Base directory for relative paths in repos config's 'log_path'
   logs_basedir: "sshfs://viv@192.168.0.198:/home/viv/dwarfdisk/Backup/logs/"
   repos_basedir: "ssh://viv@192.168.0.198/home/viv/dwarfdisk/Backup"
 
-  # Enable alarming on discord channel for failed backups 90/
   discord:
     webhook: "https://discord.com/api/webhooks/1121501560833323091/dGZjhM35M6VheXTGJFFxeLjpkQpt6WLi7zfCgbUdVqIMeaPB4Sn8Y4w8PeqNI-Iy1F9H"
     webhook_user: "Borg backup dashboard"
-    # First {}: backups count, second: list of message_bkup for each failed bkup
     message: "**{} Backups failed**:\n\n{}\nSee [web dashboard](http://127.0.0.1:3000) for details"
-    # First {}: backup name, second: status, third: date/time
     message_bkup: "- **{}**: Failed with status `{}` on {}\n"
 
 repos:
-  # Repo  name
   "dwarfserver":
-    # Repo absolute path
     "repo_path": "dwarfserver"
-    # Repo logs absolute path, or relative to the main log_dir
     "log_path": "dwarfserver"
-    # Repo password TODO: obfuscate/env var
     "repo_pwd": "backup"
-    # Command/script to run to manually start a backup.
     "script": "script"
 
   "mediadwarf":

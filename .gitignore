@@ -6,4 +6,6 @@ __pycache__
 *.egg-info/
 etc/docker_example/data
 etc/docker_example/config/ssh
+etc/docker_example/config/config_docker.yaml
+etc/config_dev.yaml
 

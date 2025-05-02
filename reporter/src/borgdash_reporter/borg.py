@@ -54,24 +54,30 @@ class BorgClient:
 
     # If invalid info,return empty fields
     if not json_output:
-      return {
-        "date": "1970-01-01T00:00:00.000000",
-        "size": 0,
-        "csize": 0,
-        "dsize": 0,
-      }
+      return {}
     try:
       parsed = json.loads(json_output)
       # If we got an archive info
       if "archives" in parsed:
-          info["date"] = parsed["archives"][0]["start"]
           info["size"] = parsed["archives"][0]["stats"]["original_size"]
           info["csize"] = parsed["archives"][0]["stats"]["compressed_size"]
           info["dsize"] = parsed["archives"][0]["stats"]["deduplicated_size"]
+
+          info["archive"] = {}
+          info["archive"]["nfiles"] = parsed["archives"][0]["stats"]["nfiles"]
+          info["archive"]["start"] = parsed["archives"][0]["start"]
+          info["archive"]["end"] = parsed["archives"][0]["end"]
+          info["archive"]["duration"] = int(parsed["archives"][0]["duration"])
+          info["archive"]["comment"] = parsed["archives"][0]["comment"]
+          info["archive"]["name"] = parsed["archives"][0]["name"]
       else:
           info["size"] = parsed["cache"]["stats"]["total_size"]
           info["csize"] = parsed["cache"]["stats"]["total_csize"]
           info["dsize"] = parsed["cache"]["stats"]["unique_csize"]
+
+          info["repo"] = {}
+          info["repo"]["chunks"] = parsed["cache"]["stats"]["total_unique_chunks"]
+
     except (json.JSONDecodeError, KeyError) as e:
       log.error("Invalid borg info output: %s", e)
     return info
