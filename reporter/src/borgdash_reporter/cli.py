@@ -37,12 +37,13 @@ def main() -> None:
 
   try:
     cfgfile = args.config_path or os.environ.get('BORGDASH_CONFIG')
-    cfg = Config(cfgfile)
+    defaultcfgfile = os.environ.get('BORGDASH_DEFAULT_CONFIG')
+    cfg = Config(cfgfile, defaultcfgfile)
     # cfg.dump()
 
     reporter = BorgReporter(cfg)
-    reporter.scan_repos()
-    # reporter.load_repos()
+    # reporter.scan_repos()
+    reporter.load_repos()
 
     sys.exit(0)
   except ReporterError as e:

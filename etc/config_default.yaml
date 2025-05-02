@@ -8,13 +8,13 @@ dashboard:
 
 reporter:
   # Path where to store the borg report containing the report data
-  report_path: "/etc/borgdash_report.json"
+  report_path: "/data/report.json"
   # Path to the borg binary
   borg_path: "/usr/bin/borg"
   # Path to store the cronab file
-  crontab_path: "/etc/borgdash.cron"
+  crontab_path: "/data/borgdash.cron"
   # Alarm dedupe path
-  dedupe_path: "/etc/borgdash_dedupe.json"
+  dedupe_path: "/data/borgdash_dedupe.json"
   # Crontab formatted schedule to launch the reporter scan. If empty or not specified periodic run is disabled
   # schedule: "0 6 * * *"
 

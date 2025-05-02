@@ -2,9 +2,19 @@ import yaml
 import sys
 from typing import Any, Dict, Optional, Tuple
 from .exceptions import ConfigError
+from pathlib import Path
+
+def dict_deep_update(d, u):
+    for k, v in u.items():
+        if isinstance(v, dict):
+            d[k] = dict_deep_update(d.get(k, {}), v)
+        else:
+            d[k] = v
+    return d
+
 
 class Config(object):
-  DEFAULT_CONFIG="config.yaml"
+  DEFAULT_CONFIG="/etc/config_default.yaml"
   DEFAULT_REPORT_PATH = "/tmp/bordash.json"
   DEFAULT_BORG_PATH = "/usr/bin/borg"
   DEFAULT_DEDUPE_PATH = "/tmp/borgdash_dedupe.json"
@@ -31,19 +41,33 @@ class Config(object):
   CONFIG_KEY_REPO_PWD = "repo_pwd"
   CONFIG_KEY_SCRIPT = "script"
 
-  def __init__(self, config_file: Optional[str]) -> None:
-    self._config_file = config_file or self.DEFAULT_CONFIG
-    self.load()
+  def __init__(self, config_file: Optional[str], defaultcfgfile: Optional[str] = None) -> None:
+    self._config_file = config_file
 
-  def load(self) -> None:
+    # Look for default config: Use env var, or default path or custom config folder
+    defaultcfg = Path(defaultcfgfile or self.DEFAULT_CONFIG)
+    if not Path(defaultcfg).exists() and config_file:
+      defaultcfg = Path(config_file).parent / "config_default.yaml"
+    if not defaultcfg.exists():
+      raise ConfigError("Couldn't find default config file and not specified in env BORGDASH_DEFAULT_CONFIG`")
+
+    # Load the default config
+    self._config = self.load(str(defaultcfg))
+    # Set default config for missing values
+    self._config.setdefault(self.CONFIG_KEY_REPORTER, {})
+    self._config.setdefault(self.CONFIG_KEY_REPOS, {})
+
+    # Load the custom config and merge with it with the default values
+    if self._config_file:
+      custom_config = self.load(self._config_file)
+      dict_deep_update(self._config, custom_config)
+
+  def load(self, filepath: str) -> Dict[str, Any]:
     """Load the yaml configuration"""
     try:
-      with open(self._config_file, "r") as f:
-        self._config = yaml.safe_load(f)
+      with open(filepath, "r") as f:
+        return yaml.safe_load(f)
 
-      # Set default config for missing values
-      self._config.setdefault(self.CONFIG_KEY_REPORTER, {})
-      self._config.setdefault(self.CONFIG_KEY_REPOS, {})
     except Exception as e:
           raise ConfigError(e) from e
 
