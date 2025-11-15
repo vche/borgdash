@@ -1,4 +1,4 @@
-[project]
+[workspace]
 name = "borgdash-reporter"
 version = "0.1.0"
 description = "Borg backup dashboard"
@@ -7,12 +7,12 @@ channels = ["conda-forge"]
 platforms = ["osx-arm64", 'linux-64', 'linux-aarch64']
 
 [tasks]
-dev = { cmd = "export BORGDASH_CONFIG=../etc/config_dev.yaml && npm run dev", depends-on = [
+dev = { cmd = "export BORGDASH_CONFIG=../etc/config.dev.yaml && npm run dev", depends-on = [
   "install",
 ], cwd = "./" }
 install = { cmd = "npm install", cwd = "./" }
 build = { cmd = "npm run build", depends-on = ["install"], cwd = "./" }
-start-dev = { cmd = "export BORGDASH_CONFIG=../etc/config_dev.yaml && npm run start", cwd = "./" }
+start-dev = { cmd = "export BORGDASH_CONFIG=../etc/config.dev.yaml && npm run start", cwd = "./" }
 start = { cmd = "npm run start", cwd = "./" }
 
 [dependencies]

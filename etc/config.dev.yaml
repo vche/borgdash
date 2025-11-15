@@ -1,0 +1,67 @@
+reporter: # builtin web server configuration
+  report_path: "/tmp/bordash.json"
+  borg_path: "/opt/homebrew/bin/borg"
+
+  # Base directory for relative paths specified in repos config's 'log_path'
+  logs_basedir: "/Volumes/dwarfstorage/Backup/logs"
+  # repos_basedir: "/Volumes/dwarfstorage/Backup"
+  repos_basedir: "ssh://viv@192.168.0.198/home/viv/dwarfdisk/Backup"
+
+  # Enable alarming on discord channel for failed backups
+  discord:
+    webhook: "1420474818:https://discord.com/api/webhooks/1127505560233333090/dGZjhM32M4Vd-Iy1B9H"
+    webhook_user: "Borg backup monitor"
+    message: "**{} Backups failed**:\n\n{}"
+    message_device: "- {}: Failed with status {} on {} at {}\n"
+
+repos:
+  # Repo  name
+  "dwarfserver":
+    # Repo absolute path
+    "repo_path": "dwarfserver"
+    # Repo logs absolute path, or relative to the main log_dir
+    "log_path": "dwarfserver"
+    # Repo password TODO: obfuscate/env var
+    "repo_pwd": "backup"
+    # Command/script to run to manually start a backup.
+    "script": "script"
+
+  "mediadwarf":
+    # Repo absolute path
+    "repo_path": "mediadwarf"
+    # Repo logs absolute path, or relative to the main log_dir
+    "log_path": "mediadwarf"
+    # Repo password TODO: obfuscate/env var
+    "repo_pwd": "backup"
+    # Command/script to run to manually start a backup.
+    "script": "script"
+
+  "domodwarf":
+    # Repo absolute path
+    "repo_path": "domodwarf"
+    # Repo logs absolute path, or relative to the main log_dir
+    "log_path": "domodwarf"
+    # Repo password TODO: obfuscate/env var
+    "repo_pwd": "backup"
+    # Command/script to run to manually start a backup.
+    "script": "script"
+
+  "monidwarf":
+    # Repo absolute path
+    "repo_path": "monidwarf"
+    # Repo logs absolute path, or relative to the main log_dir
+    "log_path": "monidwarf"
+    # Repo password TODO: obfuscate/env var
+    "repo_pwd": "backup"
+    # Command/script to run to manually start a backup.
+    "script": "script"
+
+  "dwarfnas":
+    # Repo absolute path
+    "repo_path": "ssh://viv@192.168.0.198/srv/dev-disk-by-uuid-cfcc839a-b20f-4d7f-934a-16cb90e6dde0/Backup/dwarfnas/omvbackup/borgbackup"
+    # Repo logs absolute path, or relative to the main log_dir
+    # "log_path": "monidwarf"
+    # Repo password TODO: obfuscate/env var
+    "repo_pwd": "nasbackup"
+    # Command/script to run to manually start a backup.
+    "script": "script"

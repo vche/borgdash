@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 
 
 def _parse_args() -> Namespace:
-  parser = ArgumentParser(description="Radarr/Sonarr client")
+  parser = ArgumentParser(description="Borgdash reporter")
   parser.add_argument("--debug", "-d", default=False, action="store_true", help="Enable debug logging")
   parser.add_argument("config_path", nargs='?', help="Config file path. If not specified, will try from env var")
   args = parser.parse_args()

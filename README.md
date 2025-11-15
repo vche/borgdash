@@ -136,14 +136,20 @@ borgdash:
   ports:
     - "3000:3000/tcp"
   volumes:
-    - '$HOME/borgdash/config/config_docker.yaml:/etc/config.yaml'
-    - '$HOME/borgdash/data:/data'
+    - /home/borgdash/config/config_docker.yaml:/etc/config.yaml
+    - /home/borgdash/data:/data
     # Required only if ssh or sshfs are used
-    - '$HOME/borgdash/config/ssh:/root/.ssh'
+    - /home/borgdash/config/ssh:/root/.ssh
   cap_add:
     # Required only if sshfs is used
     - SYS_ADMIN
+    devices:
+      # Required only if sshfs is used
+      - /dev/fuse
 ```
+
+Note: If sshfs shows "permission denied" you may need to run in privileged mode
+(`--privileged` or `privileged: true`)
 
 #### Optional: Authorize ssh hosts
 This step is only needed if remote hosts are used, either ssh or sshfs.
@@ -187,7 +193,8 @@ configure your repositories and/or discord webhook as needed.
 - [x] add full info display from repo
 - [x] add full info display from archives
 - [x] add screenshots
-- [ ] publish docker and repo public
+- [x] publish docker and repo public
+- [ ] understand why some hosts require privileged docker and cap_add + device is not enough
 - [ ] add extract feature?
   - extract locally
   - then upload

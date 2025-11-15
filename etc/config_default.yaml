@@ -2,7 +2,7 @@ dashboard:
   # Path to the reporter binary to run to regenerate the borg report
   reporter_path: "/reporter/.pixi/envs/default/bin/borgdash-reporter"
   # UI Timeout for borg report generation.
-  rescan_timeout_ms: 300000
+  rescan_timeout_ms: 600000
   # Time to keep sshfs mounts. Past this time they'll be remounted at next log display
   sshfs_mount_uptime_ms: 6000000
 

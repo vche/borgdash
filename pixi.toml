@@ -1,4 +1,4 @@
-[project]
+[workspace]
 name = "borgdash"
 version = "0.1.0"
 description = "Borg backup monitor"
@@ -14,7 +14,7 @@ dashboard-dev = { cmd = "pixi run dev", cwd = "dashboard" }
 dashboard-build = { cmd = "pixi run build", cwd = "dashboard" }
 reporter-build = { cmd = "pixi run build", cwd = "reporter" }
 docker-multi = { cmd = "docker build --platform linux/amd64,linux/arm64 -t vche/borgdash:latest .", cwd = "." }
-docker-push = { cmd = "docker push -t vche/borgdash:latest .", cwd = "." }
+docker-push = { cmd = "docker push vche/borgdash:latest", cwd = "." }
 docker-clean = { cmd = "docker stop borgdash; docker rm borgdash ", cwd = "." }
 docker-build = { cmd = "docker build -t vche/borgdash:latest .", cwd = "." }
 docker-run = { cmd = [

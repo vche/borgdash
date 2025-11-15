@@ -18,7 +18,7 @@ function get_repo_time_series(repo_data: { [k: string]: tBorgRepo }) {
       ),
       data: rdata.last_backup?.datetime ? [
         DateTime.fromISO(rdata.last_backup.datetime).diffNow().negate().toMillis()
-      ] : undefined
+      ] : [0]
     }
   ));
 }
@@ -28,7 +28,7 @@ function get_repo_size_series(repo_data: { [k: string]: tBorgRepo }) {
     {
       label: rname,
       valueFormatter: (sz: number | null) => (sz === null ? '' : `${prettyBytes(sz)}`),
-      data: rdata.last_backup?.datetime ? [rdata.last_backup.sizes.osize] : undefined
+      data: rdata.last_backup?.datetime ? [rdata.last_backup.sizes.osize] : [0]
     }
   ));
 }
