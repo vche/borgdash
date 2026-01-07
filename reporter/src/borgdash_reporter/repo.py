@@ -1,12 +1,20 @@
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Self, Tuple
 from .borg import BorgClient
 from .logfs import logfs_from_path
 
 log = logging.getLogger(__name__)
+
+
+def ensure_timezone_aware(dt: Optional[datetime]) -> Optional[datetime]:
+  """Ensure a datetime object is timezone-aware. If it's naive, assume UTC."""
+  if dt and dt.tzinfo is None:
+    return dt.replace(tzinfo=timezone.utc)
+  return dt
+
 
 class BorgLog():
   SUCCESS = 'success'
@@ -58,7 +66,7 @@ class BorgLog():
         line_msg = tokens[3]
         if line_msg.startswith(self.STATUS_START):
           try:
-            date_time = datetime.fromisoformat(f"{tokens[0]}T{tokens[1]}.000000")
+            date_time = datetime.fromisoformat(f"{tokens[0]}T{tokens[1]}.000000").replace(tzinfo=timezone.utc)
             if line_msg.endswith(self.STATUS_END+'0'):
               status = self.SUCCESS
             elif line_msg.endswith(self.STATUS_END+'1'):
@@ -238,8 +246,8 @@ class BorgRepo:
       log.info(f"Scanning archive: {backup.name}")
       archinfo = self.borg.info(archive=backup.name)
       if archinfo and archinfo.get("archive"):
-          backup.date_time = datetime.fromisoformat(archinfo["archive"]["start"])
-          backup.date_time_end = datetime.fromisoformat(archinfo["archive"]["end"])
+          backup.date_time = ensure_timezone_aware(datetime.fromisoformat(archinfo["archive"]["start"]))
+          backup.date_time_end = ensure_timezone_aware(datetime.fromisoformat(archinfo["archive"]["end"]))
           backup.duration = archinfo["archive"]["duration"]
           backup.comment = archinfo["archive"]["comment"]
           backup.nfiles = archinfo["archive"]["nfiles"]
