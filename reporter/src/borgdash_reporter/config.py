@@ -1,8 +1,13 @@
+import logging
 import yaml
 import sys
+from datetime import timezone, tzinfo
 from typing import Any, Dict, Optional, Tuple
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from .exceptions import ConfigError
 from pathlib import Path
+
+log = logging.getLogger(__name__)
 
 def dict_deep_update(d, u):
     for k, v in u.items():
@@ -20,6 +25,7 @@ class Config(object):
   DEFAULT_DEDUPE_PATH = "/tmp/borgdash_dedupe.json"
   DEFAULT_LOGS_BASEDIR = "/logs"
   DEFAULT_REPOS_BASEDIR = "/repos"
+  DEFAULT_TIMEZONE = "UTC"
   DEFAULT_ALARM_MESSAGE = "**{} Backups failed**:\n\n{}"
   DEFAULT_ALARM_MESSAGE_DEV = "- {}: Failed with status {} on {}\n"
 
@@ -29,6 +35,7 @@ class Config(object):
   CONFIG_KEY_DEDUPE_PATH = "dedupe_path"
   CONFIG_KEY_LOGS_BASEDIR = "logs_basedir"
   CONFIG_KEY_REPOS_BASEDIR = "repos_basedir"
+  CONFIG_KEY_TIMEZONE = "timezone"
   CONFIG_KEY_DISCORD = "discord"
   CONFIG_KEY_WEBHOOK = "webhook"
   CONFIG_KEY_WEBHOOK_USER = "webhook_user"
@@ -88,6 +95,23 @@ class Config(object):
     return self._config[self.CONFIG_KEY_REPORTER].get(self.CONFIG_KEY_REPOS_BASEDIR, self.DEFAULT_REPOS_BASEDIR)
 
   @property
+  def timezone(self) -> tzinfo:
+    """Timezone the backup log timestamps are written in (host local time).
+
+    Borg archive timestamps are UTC, but log lines come from the wrapper's
+    `date` command in the host's local zone, so they must be interpreted in
+    this timezone. Defaults to UTC. Falls back to UTC on an invalid name.
+    """
+    name = self._config[self.CONFIG_KEY_REPORTER].get(self.CONFIG_KEY_TIMEZONE, self.DEFAULT_TIMEZONE)
+    if not name or name.upper() == "UTC":
+      return timezone.utc
+    try:
+      return ZoneInfo(name)
+    except (ZoneInfoNotFoundError, ValueError) as e:
+      log.error(f"Invalid timezone '{name}' ({e}), falling back to UTC")
+      return timezone.utc
+
+  @property
   def dedupe_path(self) -> str:
     return self._config[self.CONFIG_KEY_REPORTER].get(self.CONFIG_KEY_DEDUPE_PATH, self.DEFAULT_DEDUPE_PATH)
 
@@ -109,5 +133,5 @@ class Config(object):
   def dump(self):
     print("Reporter config:", file=sys.stderr)
     print(f"  report={self.report_path}\n  borg={self.borg_path}\n  logs={self.logs_basedir}", file=sys.stderr)
-    print(f"  repos={self.repos_basedir}\n  discord={self.discord_config}", file=sys.stderr)
+    print(f"  repos={self.repos_basedir}\n  timezone={self.timezone}\n  discord={self.discord_config}", file=sys.stderr)
     print(f"Repos config: {self.repos_config}", file=sys.stderr)

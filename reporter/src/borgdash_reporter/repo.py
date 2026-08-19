@@ -1,6 +1,6 @@
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, tzinfo
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Self, Tuple
 from .borg import BorgClient
@@ -9,10 +9,10 @@ from .logfs import logfs_from_path
 log = logging.getLogger(__name__)
 
 
-def ensure_timezone_aware(dt: Optional[datetime]) -> Optional[datetime]:
-  """Ensure a datetime object is timezone-aware. If it's naive, assume UTC."""
+def ensure_timezone_aware(dt: Optional[datetime], tz: tzinfo = timezone.utc) -> Optional[datetime]:
+  """Ensure a datetime object is timezone-aware. If it's naive, assume `tz` (UTC by default)."""
   if dt and dt.tzinfo is None:
-    return dt.replace(tzinfo=timezone.utc)
+    return dt.replace(tzinfo=tz)
   return dt
 
 
@@ -32,9 +32,14 @@ class BorgLog():
     filepath: Path,
     status: Optional[str] = None,
     datetime: Optional[datetime] = None,
-    archive: Optional[str] = None
+    archive: Optional[str] = None,
+    log_timezone: tzinfo = timezone.utc,
   ):
     self.filepath = filepath
+    # Timezone the backup log timestamps are written in (backup host local time).
+    # Borg archive timestamps are UTC, but log lines come from the wrapper's
+    # `date` command, so they must be interpreted in the host's local zone.
+    self._log_tz = log_timezone
     self.status, self.date_time, self.archive_name = self._parse_log() if not status else (status, datetime, archive)
 
   def __str__(self) -> str:
@@ -66,7 +71,7 @@ class BorgLog():
         line_msg = tokens[3]
         if line_msg.startswith(self.STATUS_START):
           try:
-            date_time = datetime.fromisoformat(f"{tokens[0]}T{tokens[1]}.000000").replace(tzinfo=timezone.utc)
+            date_time = datetime.fromisoformat(f"{tokens[0]}T{tokens[1]}.000000").replace(tzinfo=self._log_tz)
             if line_msg.endswith(self.STATUS_END+'0'):
               status = self.SUCCESS
             elif line_msg.endswith(self.STATUS_END+'1'):
@@ -176,7 +181,8 @@ class BorgRepo:
     path: str,
     logs: Optional[str] = None,
     pwd: Optional[str] = None,
-    cmd: Optional[str] = None
+    cmd: Optional[str] = None,
+    log_timezone: tzinfo = timezone.utc,
   ):
     # repo config
     self.name = name
@@ -184,6 +190,8 @@ class BorgRepo:
     self.logspath = logfs_from_path(logs)
     self.pwd = pwd
     self.cmd = cmd
+    # Timezone the backup logs for this repo are written in (host local time).
+    self._log_tz = log_timezone
     self.borg = BorgClient(borg_path, self.repopath, self.pwd)
 
     # repo data
@@ -200,7 +208,7 @@ class BorgRepo:
     last_log = None
     if self.logspath and len(self.archives) > 0:
       for logfile in self.logspath.get_logs_list():
-        borglog = BorgLog(logfile)
+        borglog = BorgLog(logfile, log_timezone=self._log_tz)
         if borglog.archive_name:
           archive = self.archives.get(borglog.archive_name)
           if archive:
