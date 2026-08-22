@@ -54,6 +54,7 @@ class BorgReporter:
         "logs": resolve_path(self._cfg.logs_basedir, logpath) if logpath else None,
         "pwd": repo_config.get(self._cfg.CONFIG_KEY_REPO_PWD),
         "cmd": repo_config.get(self._cfg.CONFIG_KEY_SCRIPT),
+        "log_timezone": self._cfg.timezone,
       }
     return {}
 

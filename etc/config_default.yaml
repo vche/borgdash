@@ -29,6 +29,13 @@ reporter:
   # repos_basedir: "ssh://user@192.168.0.10/repos"
   repos_basedir: "/repos"
 
+  # Timezone the backup logs are written in (the backup host's local time, as
+  # produced by the wrapper's `date` command). Borg archive timestamps are
+  # always UTC and handled as such; this only affects how the log "last run"
+  # timestamps are interpreted. IANA name, e.g. "America/Los_Angeles".
+  # Defaults to UTC.
+  timezone: "UTC"
+
   # Enable alarming on discord channel for failed backups 90/
   # discord:
   #   webhook: "https://discord.com/api/webhooks/xxxxxxxx/yyyyy"
