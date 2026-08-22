@@ -12,6 +12,8 @@ export type tCrontabConfig = {
 const DEFAULT_SCHEDULE = "0 6 * * *";
 const DEFAULT_CONFIG = { enabled: false, schedule: DEFAULT_SCHEDULE };
 const STDLOG_ARGS = ">/proc/1/fd/1 2>/proc/1/fd/2";
+// Non-blocking lock so a scheduled scan skips if the previous one is still running.
+const REPORTER_LOCK = "flock -n /tmp/borgdash-reporter.lock";
 
 export async function load_crontab(): Promise<tCrontabConfig> {
   const cfg = await get_config();
@@ -42,7 +44,12 @@ export async function write_crontab(croncfg: tCrontabConfig) {
 
   try {
     const schedule = croncfg.schedule ? croncfg.schedule : DEFAULT_SCHEDULE;
-    const commmand = `${cfg.dashboard.reporter_path} ${CONFIG_PATH}`;
+    // Guard against overlapping scans: on large repos or a busy NFS mount a scan can
+    // still be running when the next scheduled tick fires, stacking reporter processes
+    // that pile on more I/O and can spiral. flock -n makes a new run skip if one is
+    // already in progress. (load_crontab only reads the first 5 tokens as the schedule,
+    // so the wrapped command doesn't affect schedule parsing.)
+    const commmand = `${REPORTER_LOCK} ${cfg.dashboard.reporter_path} ${CONFIG_PATH}`;
     const cronline = `${croncfg.enabled ? '' : '# '}${schedule} ${commmand} ${STDLOG_ARGS}\n`
     await fs.writeFile(cfg.reporter.crontab_path, cronline);
     console.log(`Crontab file saved to ${cfg.reporter.crontab_path}`);
